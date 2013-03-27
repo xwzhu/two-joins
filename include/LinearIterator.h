@@ -18,6 +18,7 @@ public:
 	bool at_end();
 	void seek(const int seekKey);
 private:
+	RelationSpec *spec;
 	CompleteArrayBST* bst;
 };
 

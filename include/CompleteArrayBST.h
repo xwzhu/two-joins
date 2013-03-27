@@ -13,7 +13,6 @@
 class CompleteArrayBST {
 private:
 	vector<int> array;
-	RelationSpec* spec;
 	int attrIdx;
 	size_t curPos;
 	size_t size;
@@ -31,11 +30,10 @@ private:
 	int peek_parent(int& side);
 	void move_front();
 public:
-	CompleteArrayBST(RelationSpec* specIn, int attrIdxIN = 0);
+	CompleteArrayBST(const vector<int*> &sortedArray, int attrIdxIN = 0);
 	void search(int value);
 	void show(size_t subRoot);
 	void show(bool fromStart);
-	void show_seek();
 	void show_array();
 	int key();
 	int key_at_pos(size_t pos);

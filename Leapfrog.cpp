@@ -15,14 +15,14 @@ Leapfrog::Leapfrog(map<string, RelationSpec *> &relSpecs,
 		vector<string> &orgJoinRels) {
 	// TODO Auto-generated constructor stub
 	atEnd = false;
-	for (size_t i = 0; i != orgJoinRels.size(); i++) {
+	size = orgJoinRels.size();
+	for (size_t i = 0; i != size; i++) {
 		LinearIterator* linearPtr = new LinearIterator(
 				relSpecs[orgJoinRels[i]]);
 		iterArray.push_back(linearPtr);
 		if (linearPtr->at_end())
 			atEnd = true;
 	}
-	size = iterArray.size();
 
 	// sort the array iterArray by keys at which the iterators are positioned
 	sort(iterArray.begin(), iterArray.end(), iterSorter);
@@ -32,7 +32,7 @@ Leapfrog::Leapfrog(map<string, RelationSpec *> &relSpecs,
 }
 
 void Leapfrog::search() {
-	int maxKey = iterArray[(pIdx - 1) % size]->key();
+	int maxKey = iterArray[(pIdx + size - 1) % size]->key();
 	while (true) {
 		int leastKey = iterArray[pIdx]->key();
 		if (leastKey == maxKey) {

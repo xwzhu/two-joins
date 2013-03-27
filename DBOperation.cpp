@@ -76,6 +76,7 @@ void process_queries(const string queryPath, map<string, RelationSpec*> &relSpec
 			joinRelMap[orgJoinRels.at(i)] = true;
 		}
 
+		cerr << "Showing result for leapfrog join:" << endl;
 		int localCount = 0;
 		Leapfrog * leap = new Leapfrog(relSpecs, orgJoinRels);
 		while (!leap->at_end()) {
@@ -83,6 +84,7 @@ void process_queries(const string queryPath, map<string, RelationSpec*> &relSpec
 			leap->show();
 			leap->next();
 		}
+		cerr << endl;
 
 		// join the relations in the order of attributes
 		while (!joinAttrOrder.empty()) {

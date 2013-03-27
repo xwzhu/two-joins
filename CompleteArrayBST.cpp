@@ -7,16 +7,14 @@
 
 #include "include/CompleteArrayBST.h"
 
-CompleteArrayBST::CompleteArrayBST(RelationSpec* specIn, int attrIdxIN) {
-	cerr << "Building BST: " << specIn->relName << endl;
-	spec = specIn;
-	size = spec->memDB.size();
+CompleteArrayBST::CompleteArrayBST(const vector<int*> &sortedArray, int attrIdxIN) {
+	size = sortedArray.size();
 	assert(size > 0);
 	array.resize(size);
 	attrIdx = attrIdxIN;
 	curPos = 0;
 	atEnd = false;
-	make_tree(spec->memDB, 0, 0, size-1);
+	make_tree(sortedArray, 0, 0, size-1);
 	move_front();
 }
 
@@ -115,16 +113,6 @@ void CompleteArrayBST::show(bool fromStart) {
 void CompleteArrayBST::show_array() {
 	for (size_t i=0; i!=size; i++) {
 		cerr << array[i] << " ";
-	}
-	cerr << endl;
-}
-
-void CompleteArrayBST::show_seek() {
-	for (size_t i=0; i!=size; i++) {
-		int seekKey = *(spec->memDB[i] + attrIdx);
-		seek(seekKey);
-//		if (!at_end())
-		cerr << key() << " ";
 	}
 	cerr << endl;
 }
