@@ -1,4 +1,4 @@
-#include "include/dboperation.h"
+#include "include/DBOperation.h"
 
 int main(int argc, char *argv[]) {
 	string dirName = "/home/parallels/Joins/Joins-bin/dataset2-zipf/scale1/";
