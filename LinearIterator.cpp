@@ -14,6 +14,9 @@ LinearIterator::LinearIterator(RelationSpec* specIn, int attrIdxIN) {
 	// sort the memDB based on attrIdxIN
 	sort(specIn->memDB.begin(), specIn->memDB.end(), sorter(attrIdxIN));
 	bst = new CompleteArrayBST(specIn, attrIdxIN);
+//	cerr << endl;
+//	bst->show_seek();
+//	cerr << endl;
 }
 
 int LinearIterator::key() {

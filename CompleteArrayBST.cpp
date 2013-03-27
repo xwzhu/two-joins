@@ -62,21 +62,27 @@ void CompleteArrayBST::search(int value) {
 }
 
 void CompleteArrayBST::seek(const int seekKey) {
-	assert(seekKey>=key());
+//	assert(seekKey>=key());
 
-	if (at_end() || seekKey == key())
+//	cerr << at_end() << " " << seekKey << " " << key() << endl;
+	if (at_end() || seekKey <= key()) {
 		return;
+	}
 
 	if (has_parent()) {
-		int pValue, parentSide;
-		pValue = peek_parent(parentSide);
+		int pValue, side;
+		pValue = peek_parent(side);
 
-		if (pValue < seekKey) { // go to the parent nod and recursive call seek
-			move_parent(parentSide);
+		if (side == -1 && pValue < seekKey) { // go to the parent nod and recursive call seek
+//			cerr << "move_parent" << " " << curPos << " " << key() << " " << pValue << " " << seekKey << " ";
+			move_parent(side);
+//			cerr << curPos << " " << side << endl;
 			seek(seekKey);
 		}
 		else { // pValue >= value
+//			cerr << "move_next" << " " << curPos << " " << key() << " " << pValue << " " << seekKey << " ";
 			next();
+//			cerr << curPos << endl;
 			seek(seekKey);
 		}
 	}
@@ -90,15 +96,35 @@ void CompleteArrayBST::show(size_t subRoot) {
 	if (subRoot*2+1 < size) {
 		show(subRoot*2+1);
 	}
-	cerr << array[subRoot] << " ";
+	cerr << key_at_pos(subRoot) << " ";
 	if (subRoot*2+2 < size) {
 		show(subRoot*2+2);
 	}
 }
 
+void CompleteArrayBST::show(bool fromStart) {
+	if (fromStart)
+		move_front();
+	while(!at_end()) {
+		cerr << key() << " ";
+		next();
+	}
+	cerr << endl;
+}
+
 void CompleteArrayBST::show_array() {
 	for (size_t i=0; i!=size; i++) {
 		cerr << array[i] << " ";
+	}
+	cerr << endl;
+}
+
+void CompleteArrayBST::show_seek() {
+	for (size_t i=0; i!=size; i++) {
+		int seekKey = *(spec->memDB[i] + attrIdx);
+		seek(seekKey);
+//		if (!at_end())
+		cerr << key() << " ";
 	}
 	cerr << endl;
 }
@@ -146,6 +172,10 @@ void CompleteArrayBST::next() {
 		atEnd = true;
 }
 
+size_t CompleteArrayBST::get_size() {
+	return size;
+}
+
 bool CompleteArrayBST::at_end() {
 	return atEnd;
 }
@@ -170,13 +200,13 @@ void CompleteArrayBST::move_right() {
 	curPos = curPos*2+2;
 }
 
-void CompleteArrayBST::move_parent(int& parentSide) {
+void CompleteArrayBST::move_parent(int& side) {
 	if (curPos % 2 == 1) {
-		parentSide = -1;
+		side = -1;
 		curPos = (curPos - 1) / 2;
 	}
 	else {
-		parentSide = 1;
+		side = 1;
 		curPos = (curPos - 2) / 2;
 	}
 }
@@ -196,13 +226,13 @@ int CompleteArrayBST::peek_right() {
 	return key_at_pos(curPos*2+2);
 }
 
-int CompleteArrayBST::peek_parent(int& parentSide) {
+int CompleteArrayBST::peek_parent(int& side) {
 	if (curPos % 2 == 1) {
-		parentSide = -1;
+		side = -1;
 		return key_at_pos( (curPos - 1) / 2 );
 	}
 	else {
-		parentSide = 1;
+		side = 1;
 		return key_at_pos( (curPos - 2) / 2 );
 	}
 }

@@ -1,5 +1,5 @@
 #include "include/DBOperation.h"
-#include "include/CompleteArrayBST.h"
+#include "include/Leapfrog.h"
 
 bool prepare_minibase(const string dirName, map<string, RelationSpec*> &relSpecs) {
 	string dbSpecPath = dirName + "databasefile";
@@ -49,10 +49,10 @@ RelationSpec* prepare_relation(const string dirName, const string RelSpecStr) {
 	if (!relSpec->build_relation())
 		cerr << "Cannot build relation: " << relSpec->relName << endl;
 
-	CompleteArrayBST * bst = new CompleteArrayBST(relSpec);
-	bst->show(0);
-	cerr << endl;
-	bst->show_array();
+//	CompleteArrayBST * bst = new CompleteArrayBST(relSpec);
+//	bst->show(0);
+//	cerr << endl;
+//	bst->show_array();
 
 	return relSpec;
 }
@@ -76,6 +76,14 @@ void process_queries(const string queryPath, map<string, RelationSpec*> &relSpec
 			joinRelMap[orgJoinRels.at(i)] = true;
 		}
 
+		int localCount = 0;
+		Leapfrog * leap = new Leapfrog(relSpecs, orgJoinRels);
+		while (!leap->at_end()) {
+			cerr << ++localCount << ": ";
+			leap->show();
+			leap->next();
+		}
+
 		// join the relations in the order of attributes
 		while (!joinAttrOrder.empty()) {
 			vector<string> candidateRels;
@@ -96,7 +104,6 @@ void process_queries(const string queryPath, map<string, RelationSpec*> &relSpec
 			assert(candidateRels.size() <= 2);
 			if (candidateRels.size() == 2) {
 				// join the two candidateRels
-				joinAttrOrder.erase(joinAttrOrder.begin());
 				// erase the two candidates from joinrels
 				joinRelMap.erase(candidateRels.at(0));
 				joinRelMap.erase(candidateRels.at(1));

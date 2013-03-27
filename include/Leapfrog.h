@@ -17,6 +17,8 @@ public:
 	void search();
 	void next();
 	void seek(const int seekKey);
+	bool at_end();
+	void show();
 private:
 	vector<LinearIterator *> iterArray;
 	bool atEnd;

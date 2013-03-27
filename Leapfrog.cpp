@@ -70,3 +70,15 @@ void Leapfrog::seek(const int seekKey) {
 		search();
 	}
 }
+
+bool Leapfrog::at_end() {
+	return atEnd;
+}
+
+void Leapfrog::show() {
+	cerr << pIdx << " " << key << " ";
+	for (size_t i = 0; i!=size; i++) {
+		cerr << iterArray[i]->key() << " ";
+	}
+	cerr << endl;
+}

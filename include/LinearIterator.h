@@ -19,7 +19,6 @@ public:
 	void seek(const int seekKey);
 private:
 	CompleteArrayBST* bst;
-
 };
 
 #endif /* LINEARITERATOR_H_ */
