@@ -20,6 +20,7 @@ Leapfrog::Leapfrog(map<string, RelationSpec *> &relSpecs,
 		LinearIterator* linearPtr = new LinearIterator(
 				relSpecs[orgJoinRels[i]]);
 		iterArray.push_back(linearPtr);
+//		linearPtr->display_record();
 		if (linearPtr->at_end())
 			atEnd = true;
 	}
@@ -36,6 +37,7 @@ void Leapfrog::search() {
 	while (true) {
 		int leastKey = iterArray[pIdx]->key();
 		if (leastKey == maxKey) {
+//			iterArray[pIdx]->display_record();
 			key = leastKey;
 			return;
 		} else {

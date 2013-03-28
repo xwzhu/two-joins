@@ -12,12 +12,11 @@
 
 class CompleteArrayBST {
 private:
-	vector<int> array;
-	int attrIdx;
+	vector<int> idxArray;
 	size_t curPos;
 	size_t size;
 	bool atEnd;
-	void make_tree(const vector<int*> &sortedArray, size_t curRootPos, size_t lowIdx,
+	void make_tree(const vector<int> &sortedArray, size_t curRootPos, size_t lowIdx,
 			size_t highIdx);
 	bool has_left();
 	bool has_right();
@@ -30,8 +29,7 @@ private:
 	int peek_parent(int& side);
 	void move_front();
 public:
-	CompleteArrayBST(const vector<int*> &sortedArray, int attrIdxIN = 0);
-	void search(int value);
+	CompleteArrayBST(const vector<int> &sortedArray);
 	void show(size_t subRoot);
 	void show(bool fromStart);
 	void show_array();
@@ -41,6 +39,8 @@ public:
 	bool at_end();
 	void next();
 	void seek(const int seekKey);
+	void move_to(size_t pos);
+	size_t get_pos();
 };
 
 #endif /* BSTREE_H_ */

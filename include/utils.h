@@ -16,6 +16,9 @@
 #include <fstream>
 #include <assert.h>
 #include <algorithm>
+#include <stack>
+#include <limits>
+#include <string.h>
 using namespace std;
 
 const string whiteSpaces(" \f\n\r\t\v");

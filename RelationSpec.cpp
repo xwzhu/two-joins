@@ -24,7 +24,7 @@ RelationSpec::RelationSpec(string relName, string relPath,
 RelationSpec::~RelationSpec() {
 	// TODO Auto-generated destructor stub
 //	cerr << "calling RelationSpec destructor for: " << relName << endl;
-	for (int i=0; i!=memDB.size(); i++) {
+	for (size_t i=0; i!=memDB.size(); i++) {
 		delete[] memDB[i];
 	}
 }

@@ -1,5 +1,6 @@
 #include "include/DBOperation.h"
 #include "include/Leapfrog.h"
+#include "include/TrieIterator.h"
 
 bool prepare_minibase(const string dirName, map<string, RelationSpec*> &relSpecs) {
 	string dbSpecPath = dirName + "databasefile";
@@ -71,20 +72,24 @@ void process_queries(const string queryPath, map<string, RelationSpec*> &relSpec
 		istringstream ssRels(allRels), ssAttrs(allAttrs);
 		vector<string> orgJoinRels = split_comma(ssRels);
 		vector<string> joinAttrOrder = split_comma(ssAttrs);
+		vector<TrieIterator*> tries;
 		map<string, bool> joinRelMap;
 		for (size_t i = 0; i != orgJoinRels.size(); i++) {
 			joinRelMap[orgJoinRels.at(i)] = true;
+			TrieIterator* trie = new TrieIterator(relSpecs[orgJoinRels.at(i)]);
+			tries.push_back(trie);
 		}
 
-		cerr << "Showing result for leapfrog join:" << endl;
-		int localCount = 0;
-		Leapfrog * leap = new Leapfrog(relSpecs, orgJoinRels);
-		while (!leap->at_end()) {
-			cerr << ++localCount << ": ";
-			leap->show();
-			leap->next();
-		}
-		cerr << endl;
+//		cerr << "Showing result for leapfrog join:" << endl;
+//		int localCount = 0;
+//		Leapfrog * leap = new Leapfrog(relSpecs, orgJoinRels);
+//		while (!leap->at_end()) {
+//			localCount ++;
+////			cerr << localCount << ": ";
+////			leap->show();
+//			leap->next();
+//		}
+//		cerr << "Total number of records using leapfrog join: "<< localCount << endl;
 
 		// join the relations in the order of attributes
 		while (!joinAttrOrder.empty()) {

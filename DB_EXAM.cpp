@@ -1,8 +1,8 @@
 #include "include/DBOperation.h"
 
 int main(int argc, char *argv[]) {
-	string dirName = "/home/parallels/Joins/Joins-bin/dataset3-own/scale1/";
-	string queryPath = "/home/parallels/Joins/Joins-bin/query4";
+	string dirName = "/home/parallels/Joins/Joins-bin/dataset1-uniform/scale1/";
+	string queryPath = "/home/parallels/Joins/Joins-bin/query2";
 
 	pair<vector<string>, vector<string> > joinSpecs;
 	map<string, RelationSpec*> relSpecs;

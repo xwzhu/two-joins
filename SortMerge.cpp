@@ -70,9 +70,10 @@ RelationSpec* sort_merge_join(RelationSpec* rSpec, RelationSpec* sSpec,
 
 	// Here start the core part of the sort merge join algorithm
 	bool firstRun = true;
-	int rIdx, sIdx, rKey, sKey, rLastKey, sLastIdx = 0;
-	int rSize = rSpec->memDB.size();
-	int sSize = sSpec->memDB.size();
+	int rKey, sKey, rLastKey, sLastIdx = 0;
+	size_t rSize = rSpec->memDB.size();
+	size_t sSize = sSpec->memDB.size();
+	size_t rIdx, sIdx;
 	int recCount = 0;
 	int *rRecPtr, *sRecPtr, *nRecPtr;
 	for (rIdx = 0; rIdx != rSize; rIdx++) {
