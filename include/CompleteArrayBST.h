@@ -25,7 +25,6 @@ private:
 	void move_right();
 	void move_parent(int& side);
 	int peek_parent(int& side);
-	void move_front();
 public:
 	CompleteArrayBST(const vector<int> &sortedArray);
 	void show(size_t subRoot);
@@ -38,6 +37,7 @@ public:
 	void next();
 	void seek(const int seekKey);
 	void move_to(size_t pos);
+	void move_front();
 	size_t get_pos();
 };
 

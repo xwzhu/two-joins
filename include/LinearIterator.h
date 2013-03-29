@@ -33,6 +33,7 @@ public:
 	int* tuple();
 	void display_record();
 	idx_t get_idx_map();
+	void reset();
 	RelationSpec *spec;
 private:
 	void bst_vector(vector<int>& thisKeys);

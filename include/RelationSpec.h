@@ -12,11 +12,12 @@
 
 class RelationSpec {
 public:
-	RelationSpec(string relName, string relPath, vector<string> attrNames);
+	RelationSpec(string relName, string relPath, vector<string> attrNames,
+			bool addLineNo = true);
 	~RelationSpec();
 	bool build_relation();
 	bool has_attr(string attrName);
-	int  get_attr_idx(string attrName);
+	int get_attr_idx(string attrName);
 	void print_relation(size_t limit = 2000);
 
 	string relName;
@@ -27,6 +28,7 @@ public:
 
 private:
 	map<string, int> _attrNamesMap; // the name of attributes
+	bool _addLineNo;
 };
 
 #endif /* RELATIONSPEC_H_ */

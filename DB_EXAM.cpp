@@ -1,20 +1,19 @@
 #include "include/DBOperation.h"
 
 int main(int argc, char *argv[]) {
-	cerr << argv[0] << endl;
-
 	string dirName;
 	string queryPath;
 
-	bool useSortmerge = true;
-	bool useTrieJoin = false;
+	bool useSortmerge = false;
+	bool useTrieJoin = true;
 
 	if (argc == 5) {
+//		cerr << "using arguments" << endl;
 		queryPath = argv[2];
 		dirName = argv[4];
 	} else {
-		dirName = "/home/parallels/Joins/Joins-bin/dataset2-zipf/scale2/databasefile";
-		queryPath = "/home/parallels/Joins/Joins-bin/query3";
+		dirName = "/home/parallels/Joins/Joins-bin/dataset2-zipf/scale1/databasefile";
+		queryPath = "/home/parallels/Joins/Joins-bin/query2";
 	}
 
 	pair<vector<string>, vector<string> > joinSpecs;

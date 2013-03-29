@@ -36,6 +36,6 @@ public:
 	vector<string> get_attr_order();
 };
 
-RelationSpec* leapfrog_triejoin(TrieJoin* triejoin);
+RelationSpec* leapfrog_triejoin(TrieJoin* triejoin, int &recordCount);
 
 #endif /* TRIEJOIN_H_ */
