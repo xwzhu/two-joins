@@ -17,6 +17,7 @@ public:
 	bool build_relation();
 	bool has_attr(string attrName);
 	int  get_attr_idx(string attrName);
+	void print_relation(size_t limit = 2000);
 
 	string relName;
 	string relFilePath;

@@ -1,8 +1,9 @@
 #include "include/DBOperation.h"
 #include "include/Leapfrog.h"
-#include "include/TrieIterator.h"
+#include "include/TrieJoin.h"
 
-bool prepare_minibase(const string dirName, map<string, RelationSpec*> &relSpecs) {
+bool prepare_minibase(const string dirName,
+		map<string, RelationSpec*> &relSpecs) {
 	string dbSpecPath = dirName + "databasefile";
 	ifstream dbSpecFile(dbSpecPath.c_str());
 	// open database specification file
@@ -58,7 +59,8 @@ RelationSpec* prepare_relation(const string dirName, const string RelSpecStr) {
 	return relSpec;
 }
 
-void process_queries(const string queryPath, map<string, RelationSpec*> &relSpecs) {
+void process_queries(const string queryPath,
+		map<string, RelationSpec*> &relSpecs) {
 	cerr << "Processing queries..." << endl;
 
 	pair<vector<string>, vector<string> > querySpecs;
@@ -80,16 +82,11 @@ void process_queries(const string queryPath, map<string, RelationSpec*> &relSpec
 			tries.push_back(trie);
 		}
 
-//		cerr << "Showing result for leapfrog join:" << endl;
-//		int localCount = 0;
-//		Leapfrog * leap = new Leapfrog(relSpecs, orgJoinRels);
-//		while (!leap->at_end()) {
-//			localCount ++;
-////			cerr << localCount << ": ";
-////			leap->show();
-//			leap->next();
-//		}
-//		cerr << "Total number of records using leapfrog join: "<< localCount << endl;
+
+		TrieJoin *triejoin = new TrieJoin(orgJoinRels, joinAttrOrder, relSpecs,
+				tries);
+		leapfrog_triejoin(triejoin);
+		delete triejoin;
 
 		// join the relations in the order of attributes
 		while (!joinAttrOrder.empty()) {
@@ -117,7 +114,8 @@ void process_queries(const string queryPath, map<string, RelationSpec*> &relSpec
 				// insert the joined one
 				RelationSpec* rSpec = relSpecs[candidateRels.at(0)];
 				RelationSpec* sSpec = relSpecs[candidateRels.at(1)];
-				RelationSpec* joinedSpec = sort_merge_join(rSpec, sSpec, curAttr, joinAttrOrder);
+				RelationSpec* joinedSpec = sort_merge_join(rSpec, sSpec,
+						curAttr, joinAttrOrder);
 
 				// delete the relation after joining
 //				delete rSpec; rSpec = NULL;
@@ -127,6 +125,7 @@ void process_queries(const string queryPath, map<string, RelationSpec*> &relSpec
 
 				joinRelMap[joinedSpec->relName] = true;
 				relSpecs[joinedSpec->relName] = joinedSpec;
+//				joinedSpec->print_relation();
 			} else {
 				// move to next join attributes
 				joinAttrOrder.erase(joinAttrOrder.begin());

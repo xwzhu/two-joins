@@ -20,15 +20,17 @@ class TrieIterator {
 	stack<LinearIterator*> _stack; /*Iterator state saved when open() called*/
 	int* _state; /*Elements 0.._depth contain current trie path*/
 	bool _atEnd;
-	RelationSpec* _spec;
 public:
+	RelationSpec* spec;
 	TrieIterator(RelationSpec* specIn);
 //	TrieIterator(Btree tree);
 	int key();
+	bool at_end();
 	void open();
 	void up();
 	void next();
 	void seek(int seek_key);
+	int get_depth();
 private:
 	void update_state();
 	int match_depth(int* x, int* y);

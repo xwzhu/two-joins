@@ -8,9 +8,8 @@
 #include "include/TrieIterator.h"
 
 TrieIterator::TrieIterator(RelationSpec* specIn) {
-	cerr << "Building: " << specIn->relName << endl;
-	_spec = specIn;
-	_arity = _spec->numOfAttr;
+	spec = specIn;
+	_arity = spec->numOfAttr;
 	_depth = -1;
 	_atEnd = false;
 	_state = new int[_arity];
@@ -23,6 +22,10 @@ int TrieIterator::key() {
 	return _state[_depth];
 }
 
+bool TrieIterator::at_end() {
+	return _atEnd;
+}
+
 void TrieIterator::open() {
 	assert(!_atEnd);
 	assert(_depth < _arity - 1);
@@ -30,7 +33,7 @@ void TrieIterator::open() {
 	++_depth;
 	_stack.push(_iter);
 	//open new iter
-	_iter = new LinearIterator(_spec, _iter->get_idx_map(), _depth, _state);
+	_iter = new LinearIterator(spec, _iter->get_idx_map(), _depth, _state);
 	update_state();
 }
 
@@ -51,6 +54,10 @@ void TrieIterator::next() {
 	update_state();
 }
 
+int TrieIterator::get_depth() {
+	return _depth;
+}
+
 void TrieIterator::seek(int seekKey) {
 	assert(_depth >= 0);
 	assert(!_atEnd);
@@ -64,10 +71,12 @@ void TrieIterator::seek(int seekKey) {
 }
 
 void TrieIterator::update_state() {
-	if (_iter->at_end() || match_depth(_iter->tuple(), _state) < _depth - 1)
+	if (_iter->at_end() || match_depth(_iter->tuple(), _state) < _depth - 1) {
 		_atEnd = true;
-	else
+	}
+	else {
 		_state[_depth] = _iter->tuple()[_depth];
+	}
 }
 
 int TrieIterator::match_depth(int* x, int* y) {
