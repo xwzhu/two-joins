@@ -8,7 +8,7 @@
 #include "../include/TrieJoin.h"
 
 void get_triejoin_record(TrieJoin* triejoin, deque<int> &seq,
-		vector<int*> &memDB, int &recordCount) {
+		vector<int*> &memDB, size_t &recordCount) {
 	while (!triejoin->at_end()) {
 		seq.push_back(triejoin->key());
 		if (triejoin->get_depth() != triejoin->get_attr_num() - 1) {
@@ -37,7 +37,7 @@ void get_triejoin_record(TrieJoin* triejoin, deque<int> &seq,
 	}
 }
 
-RelationSpec* leapfrog_triejoin(TrieJoin* triejoin, int& recordCount) {
+RelationSpec* leapfrog_triejoin(TrieJoin* triejoin, size_t &recordCount) {
 	assert(triejoin->get_depth() == -1);
 	deque<int> seq;
 	vector<int*> memDB;

@@ -90,7 +90,7 @@ void process_queries(const string queryPath,
 		clock_t t1, t2;
 		double timeDiff;
 		RelationSpec* joinedSpec = NULL;
-		int recordCount = 0;
+		size_t recordCount = 0;
 
 		if (useTrieJoin) {
 			TrieJoin *triejoin = new TrieJoin(orgJoinRels, joinAttrOrder,
