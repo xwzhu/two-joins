@@ -17,8 +17,10 @@
 #include <assert.h>
 #include <algorithm>
 #include <stack>
-#include <limits>
 #include <string.h>
+#include <time.h>
+
+#define PRINTNUM 500000
 using namespace std;
 
 const string whiteSpaces(" \f\n\r\t\v");
@@ -31,5 +33,9 @@ void trim(string& str, const string& trimChars = whiteSpaces);
 vector<string> split_comma(istringstream &ss);
 
 void split_comma(const string line, int* record);
+
+int find_offset(const vector<string> &attrs, const string &target);
+
+string get_dir_path(string dbSpecPath);
 
 #endif /* UTILS_H_ */

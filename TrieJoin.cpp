@@ -26,6 +26,10 @@ void get_triejoin_record(TrieJoin* triejoin, deque<int> &seq,
 				tmpCount++;
 			}
 			memDB.push_back(record);
+			if (memDB.size() % PRINTNUM == 1)
+				cerr << '.';
+			if (memDB.size() % (PRINTNUM*20) == 0)
+				cerr << endl;
 		}
 		seq.pop_back();
 		triejoin->next();
@@ -36,25 +40,41 @@ RelationSpec* leapfrog_triejoin(TrieJoin* triejoin) {
 	assert(triejoin->get_depth() == -1);
 	deque<int> seq;
 	vector<int*> memDB;
+
+	RelationSpec* retSpec = NULL;
+	retSpec = new RelationSpec("Joined", "", triejoin->get_attr_order());
+
 	triejoin->open(); // go to depth 0
-	get_triejoin_record(triejoin, seq, memDB);
+	get_triejoin_record(triejoin, seq, retSpec->memDB);
 	triejoin->up(); // go back to depth -1
-	cerr << memDB.size() << endl;
+
+	cerr << retSpec->relName << " " << retSpec->memDB.size() << endl;
+	return retSpec;
 }
 
 TrieJoin::TrieJoin(const vector<string> &orgJoinRels,
 		const vector<string> &joinAttrOrder,
 		map<string, RelationSpec*> &relSpecs,
 		const vector<TrieIterator*> &tries) {
-	numOfAttrs = joinAttrOrder.size();
-	this->joinAttrOrder = joinAttrOrder;
+	this->_trieJoinAttrOrder = joinAttrOrder;
 
-	cerr << "Constructing: TrieJoin ... ";
+	for (size_t i = 0; i != orgJoinRels.size(); i++) {
+		RelationSpec* curSpec = relSpecs[orgJoinRels[i]];
+		for (int j = 0; j != curSpec->numOfAttr; j++) {
+			string curAttr = curSpec->attrNames[j];
+			if (find_offset(joinAttrOrder, curAttr) == -1) {
+				_trieJoinAttrOrder.push_back(curAttr);
+			}
+		}
+	}
+	_numOfAttrs = _trieJoinAttrOrder.size();
+
+	cerr << "Constructing TrieJoin ... ";
 
 	// Construct an array of leapfrog join instnaces
 	// one for each attribute
-	for (int i = 0; i != numOfAttrs; i++) {
-		string curAttr = joinAttrOrder[i];
+	for (int i = 0; i != _numOfAttrs; i++) {
+		string curAttr = _trieJoinAttrOrder[i];
 
 		//The leapfrog join for a variable x is given an array of pointers to
 		//trie-iterators, one for each atom in whose argument list
@@ -67,75 +87,79 @@ TrieJoin::TrieJoin(const vector<string> &orgJoinRels,
 			}
 		}
 		Leapfrog* leapfrog = new Leapfrog(trieArray, curAttr);
-		leapArray.push_back(leapfrog);
+		_leapArray.push_back(leapfrog);
 	}
 
 	// The triejoin uses a variable depth to track the current
 	// attribute for which a binding is being sought; initially
 	// depth = -1
-	depth = -1;
-	curLeap = NULL;
+	_depth = -1;
+	_curLeap = NULL;
 	cerr << "done." << endl;
 }
 
 TrieJoin::~TrieJoin() {
-	for (int i = 0; i != numOfAttrs; i++) {
-		delete leapArray[i];
+	for (int i = 0; i != _numOfAttrs; i++) {
+		delete _leapArray[i];
 	}
 }
 
 void TrieJoin::open() {
-	depth++;
-	assert(depth >= 0);
-	assert(depth < numOfAttrs);
+	_depth++;
+	assert(_depth >= 0);
+	assert(_depth < _numOfAttrs);
 	// for each iter in leapfrog join at current depth, call open()
-	curLeap = leapArray[depth];
-	curLeap->open_all();
+	_curLeap = _leapArray[_depth];
+	_curLeap->open_all();
 	// call leapfrog-init() for leapfrog join at current depth
-	curLeap->init();
+	_curLeap->init();
 }
 
 void TrieJoin::up() {
-	assert(depth >= 0);
-	assert(depth < numOfAttrs);
+	assert(_depth >= 0);
+	assert(_depth < _numOfAttrs);
 
 	// for each iter in leapfrog join at current depth, call up()
-	curLeap->up_all();
+	_curLeap->up_all();
 
-	depth--;
-	curLeap = leapArray[depth];
+	_depth--;
+	_curLeap = _leapArray[_depth];
 }
 
 void TrieJoin::next() {
-	curLeap->next();
+	_curLeap->next();
 }
 
 bool TrieJoin::at_end() {
-	return curLeap->at_end();
+	return _curLeap->at_end();
 }
 
 int TrieJoin::key() {
-	return curLeap->key();
+	return _curLeap->key();
 }
 
 int TrieJoin::get_depth() {
-	return depth;
+	return _depth;
 }
 
 int TrieJoin::get_attr_num() {
-	return numOfAttrs;
+	return _numOfAttrs;
+}
+
+vector<string> TrieJoin::get_attr_order() {
+	return _trieJoinAttrOrder;
 }
 
 void TrieJoin::show() {
-	curLeap->show();
+	_curLeap->show();
 }
 
 void TrieJoin::show_trie_depth() {
-	curLeap->show_depth();
+	_curLeap->show_depth();
 }
 
 void TrieJoin::show_cur_attr() {
-	assert(depth >= 0);
-	assert(depth < numOfAttrs);
-	cerr << joinAttrOrder[depth] << endl;
+	assert(_depth >= 0);
+	assert(_depth < _numOfAttrs);
+	cerr << _trieJoinAttrOrder[_depth] << endl;
 }

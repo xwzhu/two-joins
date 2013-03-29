@@ -1,10 +1,11 @@
 #include "include/DBOperation.h"
-#include "include/Leapfrog.h"
+#include "include/SortMerge.h"
 #include "include/TrieJoin.h"
 
-bool prepare_minibase(const string dirName,
+bool prepare_minibase(const string dbSpecPath,
 		map<string, RelationSpec*> &relSpecs) {
-	string dbSpecPath = dirName + "databasefile";
+	string dirPath = get_dir_path(dbSpecPath);
+	cerr << dirPath << endl;
 	ifstream dbSpecFile(dbSpecPath.c_str());
 	// open database specification file
 	if (dbSpecFile.is_open()) {
@@ -15,7 +16,7 @@ bool prepare_minibase(const string dirName,
 			if (eachRel.empty())
 				break;
 			// build the relation
-			RelationSpec* curSpec = prepare_relation(dirName, eachRel);
+			RelationSpec* curSpec = prepare_relation(dirPath, eachRel);
 			relSpecs[curSpec->relName] = curSpec;
 		}
 		dbSpecFile.close();
@@ -26,15 +27,16 @@ bool prepare_minibase(const string dirName,
 	}
 }
 
-RelationSpec* prepare_relation(const string dirName, const string RelSpecStr) {
-	cerr << "Preparing relation: " << RelSpecStr << endl;
+RelationSpec* prepare_relation(const string dbSpecPath, const string RelSpecStr) {
+//	cerr << "Preparing relation: " << RelSpecStr << endl;
+	string dirPath = get_dir_path(dbSpecPath);
 	istringstream ss(RelSpecStr);
 	char temp[256];
 	// get the path of relation file
 	ss.getline(temp, 256, ',');
 	string relFilePath(temp);
 	trim(relFilePath);
-	relFilePath = dirName + relFilePath;
+	relFilePath = dirPath + relFilePath;
 
 	// get the name of the relation
 	ss.getline(temp, 256, ',');
@@ -60,7 +62,8 @@ RelationSpec* prepare_relation(const string dirName, const string RelSpecStr) {
 }
 
 void process_queries(const string queryPath,
-		map<string, RelationSpec*> &relSpecs) {
+		map<string, RelationSpec*> &relSpecs, bool useSortmerge,
+		bool useTrieJoin) {
 	cerr << "Processing queries..." << endl;
 
 	pair<vector<string>, vector<string> > querySpecs;
@@ -82,54 +85,26 @@ void process_queries(const string queryPath,
 			tries.push_back(trie);
 		}
 
+		clock_t t1, t2;
+		double timeDiff;
 
-		TrieJoin *triejoin = new TrieJoin(orgJoinRels, joinAttrOrder, relSpecs,
-				tries);
-		leapfrog_triejoin(triejoin);
-		delete triejoin;
+		if (useTrieJoin) {
+			TrieJoin *triejoin = new TrieJoin(orgJoinRels, joinAttrOrder,
+					relSpecs, tries);
+			t1 = clock();
+			leapfrog_triejoin(triejoin);
+			t2 = clock();
+			timeDiff = ((double) t2 - (double) t1) / CLOCKS_PER_SEC * 1000;
+			cerr << "leapfrog triejoin used: " << timeDiff << "ms." << endl;
+			delete triejoin;
+		}
 
-		// join the relations in the order of attributes
-		while (!joinAttrOrder.empty()) {
-			vector<string> candidateRels;
-			string curAttr = joinAttrOrder.front();
-			// find at most 2 candidate relations for this attributes
-			for (map<string, bool>::iterator iter = joinRelMap.begin();
-					iter != joinRelMap.end(); iter++) {
-				string curRel = iter->first;
-				assert(relSpecs.find(curRel) != relSpecs.end());
-
-				RelationSpec* curRelSpec = relSpecs[curRel];
-				if (curRelSpec->has_attr(curAttr)) {
-					candidateRels.push_back(curRel);
-					if (candidateRels.size() == 2)
-						break;
-				}
-			}
-			assert(candidateRels.size() <= 2);
-			if (candidateRels.size() == 2) {
-				// join the two candidateRels
-				// erase the two candidates from joinrels
-				joinRelMap.erase(candidateRels.at(0));
-				joinRelMap.erase(candidateRels.at(1));
-				// insert the joined one
-				RelationSpec* rSpec = relSpecs[candidateRels.at(0)];
-				RelationSpec* sSpec = relSpecs[candidateRels.at(1)];
-				RelationSpec* joinedSpec = sort_merge_join(rSpec, sSpec,
-						curAttr, joinAttrOrder);
-
-				// delete the relation after joining
-//				delete rSpec; rSpec = NULL;
-//				delete sSpec; sSpec = NULL;
-//				relSpecs.erase(candidateRels.at(0));
-//				relSpecs.erase(candidateRels.at(1));
-
-				joinRelMap[joinedSpec->relName] = true;
-				relSpecs[joinedSpec->relName] = joinedSpec;
-//				joinedSpec->print_relation();
-			} else {
-				// move to next join attributes
-				joinAttrOrder.erase(joinAttrOrder.begin());
-			}
+		if (useSortmerge) {
+			t1 = clock();
+			sequential_sortmege_join(joinAttrOrder, relSpecs, joinRelMap);
+			t2 = clock();
+			timeDiff = ((double) t2 - (double) t1) / CLOCKS_PER_SEC * 1000;
+			cerr << "sort merge join used: " << timeDiff << "ms." << endl;
 		}
 	} else {
 		cerr << "Cannot open database specification file." << endl;

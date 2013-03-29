@@ -1,10 +1,62 @@
 #include "include/SortMerge.h"
-#define PRINTNUM 500000
 
-RelationSpec* sort_merge_join(RelationSpec* rSpec, RelationSpec* sSpec,
+RelationSpec* sequential_sortmege_join(const vector<string> &joinAttrOrderIn,
+		map<string, RelationSpec*> &relSpecs, map<string, bool> &joinRelMapIn) {
+	vector<string> joinAttrOrder = joinAttrOrderIn;
+	map<string, bool> joinRelMap = joinRelMapIn;
+
+	RelationSpec* retSpec = NULL;
+	// join the relations in the order of attributes
+	while (!joinAttrOrder.empty()) {
+		vector<string> candidateRels;
+		string curAttr = joinAttrOrder.front();
+		// find at most 2 candidate relations for this attributes
+		for (map<string, bool>::iterator iter = joinRelMap.begin();
+				iter != joinRelMap.end(); iter++) {
+			string curRel = iter->first;
+			assert(relSpecs.find(curRel) != relSpecs.end());
+
+			RelationSpec* curRelSpec = relSpecs[curRel];
+			if (curRelSpec->has_attr(curAttr)) {
+				candidateRels.push_back(curRel);
+				if (candidateRels.size() == 2)
+					break;
+			}
+		}
+		assert(candidateRels.size() <= 2);
+		if (candidateRels.size() == 2) {
+			// join the two candidateRels
+			// erase the two candidates from joinrels
+			joinRelMap.erase(candidateRels.at(0));
+			joinRelMap.erase(candidateRels.at(1));
+			// insert the joined one
+			RelationSpec* rSpec = relSpecs[candidateRels.at(0)];
+			RelationSpec* sSpec = relSpecs[candidateRels.at(1)];
+			RelationSpec* joinedSpec = sortmerge_join(rSpec, sSpec, curAttr,
+					joinAttrOrder);
+
+			// delete the relation after joining
+//				delete rSpec; rSpec = NULL;
+//				delete sSpec; sSpec = NULL;
+//				relSpecs.erase(candidateRels.at(0));
+//				relSpecs.erase(candidateRels.at(1));
+
+			joinRelMap[joinedSpec->relName] = true;
+			relSpecs[joinedSpec->relName] = joinedSpec;
+			retSpec = joinedSpec;
+//				joinedSpec->print_relation();
+		} else {
+			// move to next join attributes
+			joinAttrOrder.erase(joinAttrOrder.begin());
+		}
+	}
+	return retSpec;
+}
+
+RelationSpec* sortmerge_join(RelationSpec* rSpec, RelationSpec* sSpec,
 		const string &mainJoinAttr, const vector<string> &joinAttrOrder) {
 	cerr << "Join on " << mainJoinAttr << " using " << rSpec->relName << " & "
-			<< sSpec->relName << endl;
+			<< sSpec->relName << " ... ";
 
 	// sort relations based on join attributes
 	int roffset = rSpec->get_attr_idx(mainJoinAttr);
@@ -13,7 +65,7 @@ RelationSpec* sort_merge_join(RelationSpec* rSpec, RelationSpec* sSpec,
 	assert(soffset != -1);
 	sort(rSpec->memDB.begin(), rSpec->memDB.end(), sorter(roffset));
 	sort(sSpec->memDB.begin(), sSpec->memDB.end(), sorter(soffset));
-	cerr << "Finish sorting." << endl;
+	cerr << "sorting done." << " ";
 
 	// Check whether there are other attributes (beside the mainJoinAttr) need to be joined at the same time
 	vector<string> commonAttrs = sort_intersect(rSpec->attrNames,
@@ -63,10 +115,10 @@ RelationSpec* sort_merge_join(RelationSpec* rSpec, RelationSpec* sSpec,
 		sAttrIdx[i] = find_offset(sSpec->attrNames, curAttr);
 	}
 
-	cerr << "The schema for joined relation is: ";
-	for (int i = 0; i != nAttrNames.size(); i++)
-		cerr << nAttrNames.at(i) << " ";
-	cerr << endl;
+//	cerr << "The schema for joined relation is: ";
+//	for (int i = 0; i != nAttrNames.size(); i++)
+//		cerr << nAttrNames.at(i) << " ";
+//	cerr << endl;
 
 	// Here start the core part of the sort merge join algorithm
 	bool firstRun = true;
@@ -99,10 +151,10 @@ RelationSpec* sort_merge_join(RelationSpec* rSpec, RelationSpec* sSpec,
 					make_record(rRecPtr, sRecPtr, rAttrIdx, sAttrIdx, nAttrSize,
 							nRecPtr);
 					nSpec->memDB.push_back(nRecPtr);
-					if (recCount % PRINTNUM == 0)
-						cerr << ".";
-					if (recCount % (PRINTNUM * 20) == 0)
-						cerr << endl;
+//					if (recCount % PRINTNUM == 1)
+//						cerr << ".";
+//					if (recCount % (PRINTNUM * 20) == 1)
+//						cerr << endl;
 				}
 			} else {
 				if (rKey > sKey) {
@@ -115,27 +167,14 @@ RelationSpec* sort_merge_join(RelationSpec* rSpec, RelationSpec* sSpec,
 		rLastKey = rKey;
 		firstRun = false;
 	}
-	cerr << endl;
-	cerr << "Joining completed. Number of jointed records: " << recCount
-			<< endl;
+//	cerr << endl;
+	cerr << "Joining done. Records: " << recCount << endl;
 
 	//clean up
 	delete[] rOffs;
 	delete[] sOffs;
 
 	return nSpec;
-}
-
-int find_offset(const vector<string> &attrs, const string &target) {
-	int i;
-	for (i = 0; i != attrs.size(); i++) {
-		if (attrs.at(i) == target)
-			break;
-	}
-	if (i != attrs.size()) {
-		return i;
-	} else
-		return -1;
 }
 
 vector<string> sort_union(vector<string> attr1, vector<string> attr2) {

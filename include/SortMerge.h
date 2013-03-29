@@ -21,8 +21,6 @@ public:
 	}
 };
 
-int find_offset(const vector<string> &attrs, const string &target);
-
 vector<string> sort_union(vector<string> attr1, vector<string> attr2);
 
 vector<string> sort_intersect(vector<string> attr1, vector<string> attr2);
@@ -33,7 +31,10 @@ void make_record(int* &rRec, int* &sRec, int* rAttrIdx, int* sAttrIdx,
 bool check_other_attrs(int* &rRec, int* &sRec, int* rOffs, int* sOffs,
 		const int otherAttrsSize);
 
-RelationSpec* sort_merge_join(RelationSpec* rSpec, RelationSpec* sSpec,
+RelationSpec* sortmerge_join(RelationSpec* rSpec, RelationSpec* sSpec,
 		const string &mainJoinAttr, const vector<string> &joinAttrOrder);
+
+RelationSpec* sequential_sortmege_join(const vector<string> &joinAttrOrderIn,
+		map<string, RelationSpec*> &relSpecs, map<string, bool> &joinRelMapIn);
 
 #endif /* SORTMERGE_H_ */

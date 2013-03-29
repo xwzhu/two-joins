@@ -12,11 +12,11 @@
 
 class TrieJoin {
 private:
-	vector<Leapfrog *> leapArray;
-	vector<string> joinAttrOrder;
-	int depth;
-	int numOfAttrs;
-	Leapfrog *curLeap;
+	vector<Leapfrog *> _leapArray;
+	vector<string> _trieJoinAttrOrder;
+	int _depth;
+	int _numOfAttrs;
+	Leapfrog* _curLeap;
 public:
 	TrieJoin(const vector<string> &orgJoinRels,
 			const vector<string> &joinAttrOrder,
@@ -33,6 +33,7 @@ public:
 	void show_trie_depth();
 	int get_depth();
 	int get_attr_num();
+	vector<string> get_attr_order();
 };
 
 RelationSpec* leapfrog_triejoin(TrieJoin* triejoin);

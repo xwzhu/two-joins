@@ -34,107 +34,106 @@ bool iterSorter(TrieIterator* iter1, TrieIterator* iter2) {
 
 Leapfrog::Leapfrog(const vector<TrieIterator*> &iterArrayIn,
 		const string& attrNameIn) {
-//	cerr << "Building Leapfrog: " << attrNameIn << endl;
-	iterArray = iterArrayIn;
-	attrName = attrNameIn;
-	atEnd = false;
-	size = iterArray.size();
+	_iterArray = iterArrayIn;
+	_attrName = attrNameIn;
+	_atEnd = false;
+	_size = _iterArray.size();
 
 	_key = -1;
-	pIdx = -1;
+	_pIdx = -1;
 }
 
 void Leapfrog::init() {
-	atEnd = false;
+	_atEnd = false;
 
-	for (size_t i = 0; i != size; i++) {
-		if (iterArray[i]->at_end()) {
-			atEnd = true;
+	for (size_t i = 0; i != _size; i++) {
+		if (_iterArray[i]->at_end()) {
+			_atEnd = true;
 			break;
 		}
 	}
-	if (!atEnd) {
+	if (!_atEnd) {
 		// sort the array iterArray by keys at which the iterators are positioned
-		sort(iterArray.begin(), iterArray.end(), iterSorter);
-		pIdx = 0;
+		sort(_iterArray.begin(), _iterArray.end(), iterSorter);
+		_pIdx = 0;
 		search();
 	}
 }
 
 void Leapfrog::search() {
-	int maxKey = iterArray[(pIdx + size - 1) % size]->key();
+	int maxKey = _iterArray[(_pIdx + _size - 1) % _size]->key();
 	while (true) {
-		int leastKey = iterArray[pIdx]->key();
+		int leastKey = _iterArray[_pIdx]->key();
 		if (leastKey == maxKey) {
 			_key = leastKey;
 			return;
 		} else {
-			iterArray[pIdx]->seek(maxKey);
-			if (iterArray[pIdx]->at_end()) {
-				atEnd = true;
+			_iterArray[_pIdx]->seek(maxKey);
+			if (_iterArray[_pIdx]->at_end()) {
+				_atEnd = true;
 				return;
 			} else {
-				maxKey = iterArray[pIdx]->key();
-				pIdx = (pIdx + 1) % size;
+				maxKey = _iterArray[_pIdx]->key();
+				_pIdx = (_pIdx + 1) % _size;
 			}
 		}
 	}
 }
 
 void Leapfrog::next() {
-	iterArray[pIdx]->next();
-	if (iterArray[pIdx]->at_end()) {
-		atEnd = true;
+	_iterArray[_pIdx]->next();
+	if (_iterArray[_pIdx]->at_end()) {
+		_atEnd = true;
 	} else {
-		pIdx = (pIdx + 1) % size;
+		_pIdx = (_pIdx + 1) % _size;
 		search();
 	}
 }
 
 void Leapfrog::seek(const int seekKey) {
-	iterArray[pIdx]->seek(seekKey);
-	if (iterArray[pIdx]->at_end()) {
-		atEnd = true;
+	_iterArray[_pIdx]->seek(seekKey);
+	if (_iterArray[_pIdx]->at_end()) {
+		_atEnd = true;
 	} else {
-		pIdx = (pIdx + 1) % size;
+		_pIdx = (_pIdx + 1) % _size;
 		search();
 	}
 }
 
 bool Leapfrog::at_end() {
-	return atEnd;
+	return _atEnd;
 }
 
 void Leapfrog::show() {
-	cerr << "pIdx " << pIdx << "    ";
-	for (size_t i = 0; i != size; i++) {
-		cerr << iterArray[i]->spec->relName << " " << iterArray[i]->key()
+	cerr << "pIdx " << _pIdx << "    ";
+	for (size_t i = 0; i != _size; i++) {
+		cerr << _iterArray[i]->spec->relName << " " << _iterArray[i]->key()
 				<< " ";
 	}
 	cerr << endl;
 }
 
 void Leapfrog::show_depth() {
-	for (size_t i = 0; i != size; i++) {
-		cerr << iterArray[i]->spec->relName << ": " << iterArray[i]->get_depth()
+	for (size_t i = 0; i != _size; i++) {
+		cerr << _iterArray[i]->spec->relName << ": " << _iterArray[i]->get_depth()
 				<< " ";
 	}
 	cerr << endl;
 }
 
 void Leapfrog::open_all() {
-	for (size_t i = 0; i != size; i++) {
-		iterArray[i]->open();
+	for (size_t i = 0; i != _size; i++) {
+		_iterArray[i]->open();
 	}
 }
 
 void Leapfrog::up_all() {
-	for (size_t i = 0; i != size; i++) {
-		iterArray[i]->up();
+	for (size_t i = 0; i != _size; i++) {
+		_iterArray[i]->up();
 	}
 }
 
 int Leapfrog::key() {
-	assert(!atEnd);
+	assert(!_atEnd);
 	return _key;
 }

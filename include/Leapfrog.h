@@ -13,7 +13,6 @@
 
 class Leapfrog {
 public:
-//	Leapfrog(map<string, RelationSpec *> &relSpecs, vector<string> &orgJoinRels);
 	Leapfrog(const vector<TrieIterator*> &iterArrayIn, const string& attrName);
 	void init();
 	void search();
@@ -26,12 +25,12 @@ public:
 	void show_depth();
 	int key();
 private:
-	vector<TrieIterator *> iterArray;
-	bool atEnd;
-	size_t pIdx;
-	size_t size;
+	vector<TrieIterator *> _iterArray;
+	bool _atEnd;
+	size_t _pIdx;
+	size_t _size;
 	int _key;
-	string attrName;
+	string _attrName;
 };
 
 #endif /* LEAPFROG_H_ */

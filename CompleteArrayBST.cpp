@@ -214,14 +214,6 @@ void CompleteArrayBST::move_front() {
 //	cerr << curPos << " " << key() << endl;
 }
 
-int CompleteArrayBST::peek_left() {
-	return key_at_pos(curPos*2+1);
-}
-
-int CompleteArrayBST::peek_right() {
-	return key_at_pos(curPos*2+2);
-}
-
 int CompleteArrayBST::peek_parent(int& side) {
 	if (curPos % 2 == 1) {
 		side = -1;

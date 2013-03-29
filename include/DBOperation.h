@@ -3,10 +3,13 @@
 
 #include "RelationSpec.h"
 
-bool prepare_minibase(const string dirName, map<string, RelationSpec*> &relSpecs);
+bool prepare_minibase(const string dbSpecPath,
+		map<string, RelationSpec*> &relSpecs);
+
 RelationSpec* prepare_relation(const string dirName, const string RelSpecStr);
-void process_queries(const string queryPath, map<string, RelationSpec*> &relSpecs);
-RelationSpec* sort_merge_join(RelationSpec* rSpec, RelationSpec* sSpec,
-		const string &mainJoinAttr, const vector<string> &joinAttrOrder);
+
+void process_queries(const string queryPath,
+		map<string, RelationSpec*> &relSpecs, bool useSortmerge = true,
+		bool useTrieJoin = true);
 
 #endif

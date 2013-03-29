@@ -16,6 +16,11 @@ TrieIterator::TrieIterator(RelationSpec* specIn) {
 	_iter = new LinearIterator(specIn, _depth, _state);
 }
 
+TrieIterator::~TrieIterator() {
+	delete[] _state;
+	delete _iter;
+}
+
 int TrieIterator::key() {
 	assert(!_atEnd);
 	assert(_depth >= 0);
@@ -61,11 +66,6 @@ int TrieIterator::get_depth() {
 void TrieIterator::seek(int seekKey) {
 	assert(_depth >= 0);
 	assert(!_atEnd);
-//	int* seekTuple = _state;
-//	seekTuple[_depth] = seekKey;
-//	for (int i = _depth + 1; i < _arity; ++i)
-//		seekTuple[_depth] = numeric_limits<int>::min(); //e.g.numeric_limits<int>::min();
-//	_iter.seek_lub(seekTuple);
 	_iter->seek(seekKey);
 	update_state();
 }

@@ -7,18 +7,18 @@
 
 #include "include/RelationSpec.h"
 
-RelationSpec::RelationSpec(string relName, string relPath,
-		vector<string> attrNames) {
+RelationSpec::RelationSpec(string relNameIn, string relPathIn,
+		vector<string> attrNamesIn) {
 	// TODO Auto-generated constructor stub
-	this->attrNames = attrNames;
+	this->attrNames = attrNamesIn;
+	this->attrNames.push_back(relNameIn+"LineNo");
 	this->numOfAttr = attrNames.size();
 
 	for (int i = 0; i != this->numOfAttr; i++)
-		this->attrNamesMap.insert(make_pair(attrNames.at(i), i));
+		this->_attrNamesMap.insert(make_pair(attrNames.at(i), i));
 
-	this->recLen = attrNames.size() * sizeof(int);
-	this->relName = relName;
-	this->relFilePath = relPath;
+	this->relName = relNameIn;
+	this->relFilePath = relPathIn;
 }
 
 RelationSpec::~RelationSpec() {
@@ -37,20 +37,25 @@ bool RelationSpec::build_relation() {
 	if (relFile.is_open()) {
 		string line;
 		// read records from relation file
+		int lineNo = 0;
 		while (relFile.good()) {
 			int* curRec = new int[numOfAttr];
 			getline(relFile, line);
 			if (duplicate.find(line) != duplicate.end()) {
+//				continue;
 //				cerr << line << endl;
 				duplicate[line] += 1;
-			} else
+			} else {
 				duplicate[line] = 0;
+			}
 			if (line.empty())
 				continue;
 			split_comma(line, curRec);
-
+			curRec[numOfAttr-1] = lineNo;
 			// insert records into memory db
 			memDB.push_back(curRec);
+
+			lineNo ++;
 		}
 		relFile.close();
 		return true;
@@ -61,12 +66,12 @@ bool RelationSpec::build_relation() {
 }
 
 bool RelationSpec::has_attr(string attrName) {
-	return attrNamesMap.find(attrName) != attrNamesMap.end();
+	return _attrNamesMap.find(attrName) != _attrNamesMap.end();
 }
 
 int RelationSpec::get_attr_idx(string attrName) {
 	if (has_attr(attrName)) {
-		return attrNamesMap[attrName];
+		return _attrNamesMap[attrName];
 	} else {
 		return -1;
 	}

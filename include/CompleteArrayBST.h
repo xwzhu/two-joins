@@ -8,7 +8,7 @@
 #ifndef BSTREE_H_
 #define BSTREE_H_
 
-#include "RelationSpec.h"
+#include "utils.h"
 
 class CompleteArrayBST {
 private:
@@ -24,8 +24,6 @@ private:
 	void move_left();
 	void move_right();
 	void move_parent(int& side);
-	int peek_left();
-	int peek_right();
 	int peek_parent(int& side);
 	void move_front();
 public:

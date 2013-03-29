@@ -47,5 +47,27 @@ void split_comma(const string line, int* record) {
 	}
 }
 
+int find_offset(const vector<string> &attrs, const string &target) {
+	int i;
+	for (i = 0; i != attrs.size(); i++) {
+		if (attrs.at(i) == target)
+			break;
+	}
+	if (i != attrs.size()) {
+		return i;
+	} else
+		return -1;
+}
+
+string get_dir_path(string dbSpecPath) {
+	int i;
+	for (i = dbSpecPath.size()-1; i != -1; i--) {
+		if (dbSpecPath[i] == '/') {
+			break;
+		}
+	}
+	dbSpecPath.erase(dbSpecPath.begin() + (i + 1), dbSpecPath.end());
+	return dbSpecPath;
+}
 
 

@@ -24,10 +24,9 @@ public:
 	vector<int*> memDB;
 	vector<string> attrNames; // the name of attributes
 	int numOfAttr; // # of attributes
-	int recLen; // length of each record
 
 private:
-	map<string, int> attrNamesMap; // the name of attributes
+	map<string, int> _attrNamesMap; // the name of attributes
 };
 
 #endif /* RELATIONSPEC_H_ */
