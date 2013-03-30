@@ -39,4 +39,6 @@ int find_offset(const vector<string> &attrs, const string &target);
 
 string get_dir_path(string dbSpecPath);
 
+double diff_in_ms(timespec start, timespec end);
+
 #endif /* UTILS_H_ */

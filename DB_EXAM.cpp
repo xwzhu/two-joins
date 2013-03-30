@@ -4,14 +4,15 @@ int main(int argc, char *argv[]) {
 	string dirName;
 	string queryPath;
 
-	bool useSortmerge = true;
-	bool useTrieJoin = false;
+	bool useSortmerge = false;
+	bool useTrieJoin = true;
 
 	if (argc == 5) {
 		queryPath = argv[2];
 		dirName = argv[4];
 	} else {
-		dirName = "/home/parallels/Joins/Joins-bin/dataset2-zipf/scale5/databasefile";
+		dirName =
+				"/home/parallels/Joins/Joins-bin/dataset2-zipf/scale5/databasefile";
 		queryPath = "/home/parallels/Joins/Joins-bin/query1";
 	}
 
@@ -19,8 +20,7 @@ int main(int argc, char *argv[]) {
 	map<string, RelationSpec*> relSpecs;
 	if (useTrieJoin) {
 		prepare_minibase(dirName, relSpecs, true);
-	}
-	else {
+	} else {
 		prepare_minibase(dirName, relSpecs, false);
 	}
 	process_queries(queryPath, relSpecs, useSortmerge, useTrieJoin);

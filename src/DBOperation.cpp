@@ -84,7 +84,7 @@ void process_queries(const string queryPath,
 			joinRelMap[orgJoinRels.at(i)] = true;
 		}
 
-		clock_t t1, t2;
+		timespec time1, time2;
 		double timeDiff;
 		RelationSpec* joinedSpec = NULL;
 		size_t recordCount;
@@ -105,10 +105,10 @@ void process_queries(const string queryPath,
 			recordCount = 0;
 			TrieJoin *triejoin = new TrieJoin(orgJoinRels, joinAttrOrder,
 					relSpecs, tries);
-			t1 = clock();
+			clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time1);
 			joinedSpec = leapfrog_triejoin(triejoin, recordCount);
-			t2 = clock();
-			timeDiff = ((double) t2 - (double) t1) / CLOCKS_PER_SEC * 1000;
+			clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time2);
+			timeDiff = diff_in_ms(time1, time2);
 			cerr << endl << "leapfrog : " << recordCount << ". used: "
 					<< timeDiff << "ms." << endl;
 			delete triejoin;
@@ -116,11 +116,11 @@ void process_queries(const string queryPath,
 
 		if (useSortmerge) {
 			recordCount = 0;
-			t1 = clock();
+			clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time1);
 			joinedSpec = sequential_sortmege_join(joinAttrOrder, relSpecs,
 					joinRelMap, recordCount);
-			t2 = clock();
-			timeDiff = ((double) t2 - (double) t1) / CLOCKS_PER_SEC * 1000;
+			clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time2);
+			timeDiff = diff_in_ms(time1, time2);
 			cerr << endl << "sortmerge: " << recordCount << ". used: "
 					<< timeDiff << "ms." << endl;
 		}
