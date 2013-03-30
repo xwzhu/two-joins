@@ -4,8 +4,8 @@ int main(int argc, char *argv[]) {
 	string dirName;
 	string queryPath;
 
-	bool useSortmerge = true;
-	bool useTrieJoin = false;
+	bool useSortmerge = false;
+	bool useTrieJoin = true;
 	bool saveResults = false;
 
 	if (argc == 5) {
