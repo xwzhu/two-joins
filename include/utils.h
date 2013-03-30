@@ -20,7 +20,8 @@
 #include <string.h>
 #include <time.h>
 
-#define PRINTNUM 500000
+#define PRINT_NUM 5000000
+#define MAX_NUM_TO_PRE_BUILD_TRIE 8000
 using namespace std;
 
 const string whiteSpaces(" \f\n\r\t\v");

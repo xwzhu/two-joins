@@ -20,11 +20,12 @@ private:
 	stack<LinearIterator*> _stack; /*Iterator state saved when open() called*/
 	int* _state; /*Elements 0.._depth contain current trie path*/
 	bool _atEnd;
+	bool _buildOnTheFly;
 	map<vector<int>, LinearIterator*> _linearIterMap;
 	vector<int> _vState;
 public:
 	RelationSpec* spec;
-	TrieIterator(RelationSpec* specIn);
+	TrieIterator(RelationSpec* specIn, bool buildOnTheFly = false);
 	~TrieIterator();
 	int key();
 	bool at_end();

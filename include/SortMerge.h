@@ -32,9 +32,11 @@ bool check_other_attrs(int* &rRec, int* &sRec, int* rOffs, int* sOffs,
 		const int otherAttrsSize);
 
 RelationSpec* sortmerge_join(RelationSpec* rSpec, RelationSpec* sSpec,
-		const string &mainJoinAttr, const vector<string> &joinAttrOrder);
+		const string &mainJoinAttr, const vector<string> &joinAttrOrder,
+		size_t& numRec, bool saveResult = true);
 
 RelationSpec* sequential_sortmege_join(const vector<string> &joinAttrOrderIn,
-		map<string, RelationSpec*> &relSpecs, map<string, bool> &joinRelMapIn);
+		map<string, RelationSpec*> &relSpecs, map<string, bool> &joinRelMapIn,
+		size_t &recordCount);
 
 #endif /* SORTMERGE_H_ */

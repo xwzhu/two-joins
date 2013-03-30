@@ -1,7 +1,7 @@
 #include "../include/SortMerge.h"
 
 RelationSpec* sequential_sortmege_join(const vector<string> &joinAttrOrderIn,
-		map<string, RelationSpec*> &relSpecs, map<string, bool> &joinRelMapIn) {
+		map<string, RelationSpec*> &relSpecs, map<string, bool> &joinRelMapIn, size_t &recordCount) {
 	vector<string> joinAttrOrder = joinAttrOrderIn;
 	map<string, bool> joinRelMap = joinRelMapIn;
 
@@ -32,8 +32,17 @@ RelationSpec* sequential_sortmege_join(const vector<string> &joinAttrOrderIn,
 			// insert the joined one
 			RelationSpec* rSpec = relSpecs[candidateRels.at(0)];
 			RelationSpec* sSpec = relSpecs[candidateRels.at(1)];
-			RelationSpec* joinedSpec = sortmerge_join(rSpec, sSpec, curAttr,
-					joinAttrOrder);
+
+			RelationSpec* joinedSpec;
+			if (!joinRelMap.empty()) {
+				recordCount = 0;
+				joinedSpec = sortmerge_join(rSpec, sSpec, curAttr,
+						joinAttrOrder, recordCount, true);
+			} else { // we do not save result for the last joined result
+				recordCount = 0;
+				joinedSpec = sortmerge_join(rSpec, sSpec, curAttr,
+						joinAttrOrder, recordCount, false);
+			}
 
 			// delete the relation after joining
 //				delete rSpec; rSpec = NULL;
@@ -54,7 +63,8 @@ RelationSpec* sequential_sortmege_join(const vector<string> &joinAttrOrderIn,
 }
 
 RelationSpec* sortmerge_join(RelationSpec* rSpec, RelationSpec* sSpec,
-		const string &mainJoinAttr, const vector<string> &joinAttrOrder) {
+		const string &mainJoinAttr, const vector<string> &joinAttrOrder,
+		size_t& recordCount, bool saveResult) {
 //	cerr << "Join on " << mainJoinAttr << " using " << rSpec->relName << " & "
 //			<< sSpec->relName << " ... ";
 
@@ -126,7 +136,6 @@ RelationSpec* sortmerge_join(RelationSpec* rSpec, RelationSpec* sSpec,
 	size_t rSize = rSpec->memDB.size();
 	size_t sSize = sSpec->memDB.size();
 	size_t rIdx = -1, sIdx = -1;
-	int recCount = 0;
 	int *rRecPtr, *sRecPtr, *nRecPtr;
 	for (rIdx = 0; rIdx != rSize; rIdx++) {
 		rRecPtr = rSpec->memDB[rIdx];
@@ -146,15 +155,17 @@ RelationSpec* sortmerge_join(RelationSpec* rSpec, RelationSpec* sSpec,
 					continue;
 				} else {
 					// Making new records.
-					recCount++;
-					nRecPtr = new int[nAttrSize];
-					make_record(rRecPtr, sRecPtr, rAttrIdx, sAttrIdx, nAttrSize,
-							nRecPtr);
-					nSpec->memDB.push_back(nRecPtr);
-//					if (recCount % PRINTNUM == 1)
-//						cerr << ".";
-//					if (recCount % (PRINTNUM * 20) == 1)
-//						cerr << endl;
+					recordCount++;
+					if (saveResult) {
+						nRecPtr = new int[nAttrSize];
+						make_record(rRecPtr, sRecPtr, rAttrIdx, sAttrIdx,
+								nAttrSize, nRecPtr);
+						nSpec->memDB.push_back(nRecPtr);
+					}
+					if (recordCount % PRINT_NUM == 1)
+						cerr << ".";
+					if (recordCount % (PRINT_NUM * 20) == 1)
+						cerr << endl;
 				}
 			} else {
 				if (rKey > sKey) {
@@ -168,7 +179,7 @@ RelationSpec* sortmerge_join(RelationSpec* rSpec, RelationSpec* sSpec,
 		firstRun = false;
 	}
 //	cerr << endl;
-//	cerr << "Joining done. Records: " << recCount << endl;
+//	cerr << "Joining done. Records: " << recordCount << endl;
 
 	//clean up
 	delete[] rOffs;

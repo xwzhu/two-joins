@@ -27,9 +27,9 @@ void get_triejoin_record(TrieJoin* triejoin, deque<int> &seq,
 //				tmpCount++;
 //			}
 //			memDB.push_back(record);
-			if (recordCount % PRINTNUM == 1)
+			if (recordCount % PRINT_NUM == 1)
 				cerr << '.';
-			if (recordCount % (PRINTNUM*20) == 0)
+			if (recordCount % (PRINT_NUM*20) == 0)
 				cerr << endl;
 		}
 		seq.pop_back();
@@ -47,6 +47,7 @@ RelationSpec* leapfrog_triejoin(TrieJoin* triejoin, size_t &recordCount) {
 
 	triejoin->open(); // go to depth 0
 	get_triejoin_record(triejoin, seq, retSpec->memDB, recordCount);
+	cerr << endl;
 	triejoin->up(); // go back to depth -1
 
 //	cerr << retSpec->relName << " " << retSpec->memDB.size() << endl;

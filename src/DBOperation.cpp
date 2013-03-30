@@ -79,38 +79,49 @@ void process_queries(const string queryPath,
 		istringstream ssRels(allRels), ssAttrs(allAttrs);
 		vector<string> orgJoinRels = split_comma(ssRels);
 		vector<string> joinAttrOrder = split_comma(ssAttrs);
-		vector<TrieIterator*> tries;
 		map<string, bool> joinRelMap;
 		for (size_t i = 0; i != orgJoinRels.size(); i++) {
 			joinRelMap[orgJoinRels.at(i)] = true;
-			TrieIterator* trie = new TrieIterator(relSpecs[orgJoinRels.at(i)]);
-			tries.push_back(trie);
 		}
 
 		clock_t t1, t2;
 		double timeDiff;
 		RelationSpec* joinedSpec = NULL;
-		size_t recordCount = 0;
+		size_t recordCount;
 
 		if (useTrieJoin) {
+			vector<TrieIterator*> tries;
+			for (size_t i = 0; i != orgJoinRels.size(); i++) {
+				RelationSpec* curSpec = relSpecs[orgJoinRels.at(i)];
+				TrieIterator* trie;
+				if (curSpec->memDB.size() > MAX_NUM_TO_PRE_BUILD_TRIE) {
+					cerr << "trie structure is built on the fly" << endl;
+					trie = new TrieIterator(curSpec, true);
+				} else {
+					trie = new TrieIterator(curSpec, false);
+				}
+				tries.push_back(trie);
+			}
+			recordCount = 0;
 			TrieJoin *triejoin = new TrieJoin(orgJoinRels, joinAttrOrder,
 					relSpecs, tries);
 			t1 = clock();
 			joinedSpec = leapfrog_triejoin(triejoin, recordCount);
 			t2 = clock();
 			timeDiff = ((double) t2 - (double) t1) / CLOCKS_PER_SEC * 1000;
-			cerr << "leapfrog : " << recordCount << ". used: " << timeDiff
-					<< "ms." << endl;
+			cerr << endl << "leapfrog : " << recordCount << ". used: "
+					<< timeDiff << "ms." << endl;
 			delete triejoin;
 		}
 
 		if (useSortmerge) {
+			recordCount = 0;
 			t1 = clock();
 			joinedSpec = sequential_sortmege_join(joinAttrOrder, relSpecs,
-					joinRelMap);
+					joinRelMap, recordCount);
 			t2 = clock();
 			timeDiff = ((double) t2 - (double) t1) / CLOCKS_PER_SEC * 1000;
-			cerr << "sortmerge: " << joinedSpec->memDB.size() << ". used: "
+			cerr << endl << "sortmerge: " << recordCount << ". used: "
 					<< timeDiff << "ms." << endl;
 		}
 	} else {

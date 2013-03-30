@@ -7,7 +7,7 @@
 
 #include "../include/TrieIterator.h"
 
-TrieIterator::TrieIterator(RelationSpec* specIn) {
+TrieIterator::TrieIterator(RelationSpec* specIn, bool buildOnTheFly) {
 	spec = specIn;
 	_arity = spec->numOfAttr;
 	_depth = -1;
@@ -16,7 +16,9 @@ TrieIterator::TrieIterator(RelationSpec* specIn) {
 	_iter = new LinearIterator(specIn, _depth, _state);
 	_rootIter = NULL;
 	_vState.resize(_arity);
-	build_map(_iter);
+	_buildOnTheFly = buildOnTheFly;
+	if (!_buildOnTheFly)
+		build_map(_iter);
 }
 
 TrieIterator::~TrieIterator() {
@@ -63,13 +65,18 @@ void TrieIterator::open() {
 	++_depth;
 	_stack.push(_iter);
 	//open new iter
-	if (_depth == 0) {
-		_iter = _rootIter;
-		_iter->reset();
-	} else {
-		update_vState();
-		_iter = _linearIterMap[_vState];
-		_iter->reset();
+	if (!_buildOnTheFly) {
+		if (_depth == 0) {
+			_iter = _rootIter;
+			_iter->reset();
+		} else {
+			update_vState();
+			_iter = _linearIterMap[_vState];
+			_iter->reset();
+		}
+	}
+	else {
+		_iter = new LinearIterator(spec, _iter->get_idx_map(), _depth, _state);
 	}
 	update_state();
 }
@@ -79,7 +86,8 @@ void TrieIterator::up() {
 	--_depth;
 	_atEnd = false;
 	// delete old _iter from lower layer, pop _iter from stack
-	// delete _iter;
+	if (_buildOnTheFly)
+		delete _iter;
 	_iter = _stack.top();
 	_stack.pop();
 }
