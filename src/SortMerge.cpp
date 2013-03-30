@@ -1,7 +1,8 @@
 #include "../include/SortMerge.h"
 
 RelationSpec* sequential_sortmege_join(const vector<string> &joinAttrOrderIn,
-		map<string, RelationSpec*> &relSpecs, map<string, bool> &joinRelMapIn, size_t &recordCount) {
+		map<string, RelationSpec*> &relSpecs, map<string, bool> &joinRelMapIn,
+		size_t &recordCount, bool saveResult) {
 	vector<string> joinAttrOrder = joinAttrOrderIn;
 	map<string, bool> joinRelMap = joinRelMapIn;
 
@@ -38,10 +39,10 @@ RelationSpec* sequential_sortmege_join(const vector<string> &joinAttrOrderIn,
 				recordCount = 0;
 				joinedSpec = sortmerge_join(rSpec, sSpec, curAttr,
 						joinAttrOrder, recordCount, true);
-			} else { // we do not save result for the last joined result
+			} else { // we usually do not save result for the last joined result
 				recordCount = 0;
 				joinedSpec = sortmerge_join(rSpec, sSpec, curAttr,
-						joinAttrOrder, recordCount, false);
+						joinAttrOrder, recordCount, saveResult);
 			}
 
 			// delete the relation after joining

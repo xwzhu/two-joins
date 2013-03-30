@@ -7,37 +7,8 @@
 
 #include "../include/TrieJoin.h"
 
-void get_triejoin_record(TrieJoin* triejoin, deque<int> &seq,
-		vector<int*> &memDB, size_t &recordCount) {
-	while (!triejoin->at_end()) {
-		seq.push_back(triejoin->key());
-		if (triejoin->get_depth() != triejoin->get_attr_num() - 1) {
-			triejoin->open(); //go to next depth
-			get_triejoin_record(triejoin, seq, memDB, recordCount);
-			triejoin->up();
-		} else {
-			assert(seq.size() == triejoin->get_attr_num());
-			recordCount ++;
-//			int tmpCount = 0;
-//			int *record = new int[triejoin->get_attr_num()];
-//			while (tmpCount != triejoin->get_attr_num()) {
-//				seq.push_back(seq.front());
-//				record[tmpCount] = seq.front();
-//				seq.pop_front();
-//				tmpCount++;
-//			}
-//			memDB.push_back(record);
-			if (recordCount % PRINT_NUM == 1)
-				cerr << '.';
-			if (recordCount % (PRINT_NUM*20) == 0)
-				cerr << endl;
-		}
-		seq.pop_back();
-		triejoin->next();
-	}
-}
-
-RelationSpec* leapfrog_triejoin(TrieJoin* triejoin, size_t &recordCount) {
+RelationSpec* leapfrog_triejoin(TrieJoin* triejoin, size_t &recordCount,
+		bool saveResult) {
 	assert(triejoin->get_depth() == -1);
 	deque<int> seq;
 	vector<int*> memDB;
@@ -46,12 +17,44 @@ RelationSpec* leapfrog_triejoin(TrieJoin* triejoin, size_t &recordCount) {
 	retSpec = new RelationSpec("Joined", "", triejoin->get_attr_order());
 
 	triejoin->open(); // go to depth 0
-	get_triejoin_record(triejoin, seq, retSpec->memDB, recordCount);
+	get_triejoin_record(triejoin, seq, retSpec->memDB, recordCount, saveResult);
 	cerr << endl;
 	triejoin->up(); // go back to depth -1
 
 //	cerr << retSpec->relName << " " << retSpec->memDB.size() << endl;
 	return retSpec;
+}
+
+void get_triejoin_record(TrieJoin* triejoin, deque<int> &seq,
+		vector<int*> &memDB, size_t &recordCount, bool &saveResult) {
+	while (!triejoin->at_end()) {
+		seq.push_back(triejoin->key());
+		if (triejoin->get_depth() != triejoin->get_attr_num() - 1) {
+			triejoin->open(); //go to next depth
+			get_triejoin_record(triejoin, seq, memDB, recordCount, saveResult);
+			triejoin->up();
+		} else {
+			assert(seq.size() == triejoin->get_attr_num());
+			recordCount++;
+			if (saveResult) {
+				int tmpCount = 0;
+				int *record = new int[triejoin->get_attr_num()];
+				while (tmpCount != triejoin->get_attr_num()) {
+					seq.push_back(seq.front());
+					record[tmpCount] = seq.front();
+					seq.pop_front();
+					tmpCount++;
+				}
+				memDB.push_back(record);
+			}
+			if (recordCount % PRINT_NUM == 1)
+				cerr << '.';
+			if (recordCount % (PRINT_NUM * 20) == 0)
+				cerr << endl;
+		}
+		seq.pop_back();
+		triejoin->next();
+	}
 }
 
 TrieJoin::TrieJoin(const vector<string> &orgJoinRels,

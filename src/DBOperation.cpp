@@ -65,7 +65,7 @@ RelationSpec* prepare_relation(const string dbSpecPath, const string RelSpecStr,
 
 void process_queries(const string queryPath,
 		map<string, RelationSpec*> &relSpecs, bool useSortmerge,
-		bool useTrieJoin) {
+		bool useTrieJoin, bool saveResults) {
 //	cerr << "Processing queries..." << endl;
 
 	pair<vector<string>, vector<string> > querySpecs;
@@ -106,7 +106,7 @@ void process_queries(const string queryPath,
 			TrieJoin *triejoin = new TrieJoin(orgJoinRels, joinAttrOrder,
 					relSpecs, tries);
 			clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time1);
-			joinedSpec = leapfrog_triejoin(triejoin, recordCount);
+			joinedSpec = leapfrog_triejoin(triejoin, recordCount, saveResults);
 			clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time2);
 			timeDiff = diff_in_ms(time1, time2);
 			cerr << endl << "leapfrog : " << recordCount << ". used: "
@@ -118,7 +118,7 @@ void process_queries(const string queryPath,
 			recordCount = 0;
 			clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time1);
 			joinedSpec = sequential_sortmege_join(joinAttrOrder, relSpecs,
-					joinRelMap, recordCount);
+					joinRelMap, recordCount, saveResults);
 			clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time2);
 			timeDiff = diff_in_ms(time1, time2);
 			cerr << endl << "sortmerge: " << recordCount << ". used: "

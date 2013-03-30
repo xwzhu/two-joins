@@ -37,6 +37,6 @@ RelationSpec* sortmerge_join(RelationSpec* rSpec, RelationSpec* sSpec,
 
 RelationSpec* sequential_sortmege_join(const vector<string> &joinAttrOrderIn,
 		map<string, RelationSpec*> &relSpecs, map<string, bool> &joinRelMapIn,
-		size_t &recordCount);
+		size_t &recordCount, bool saveResult = false);
 
 #endif /* SORTMERGE_H_ */

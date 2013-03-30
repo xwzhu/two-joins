@@ -4,8 +4,9 @@ int main(int argc, char *argv[]) {
 	string dirName;
 	string queryPath;
 
-	bool useSortmerge = false;
-	bool useTrieJoin = true;
+	bool useSortmerge = true;
+	bool useTrieJoin = false;
+	bool saveResults = false;
 
 	if (argc == 5) {
 		queryPath = argv[2];
@@ -19,11 +20,13 @@ int main(int argc, char *argv[]) {
 	pair<vector<string>, vector<string> > joinSpecs;
 	map<string, RelationSpec*> relSpecs;
 	if (useTrieJoin) {
+		// add LineNo
 		prepare_minibase(dirName, relSpecs, true);
 	} else {
+		// do not add LineNo
 		prepare_minibase(dirName, relSpecs, false);
 	}
-	process_queries(queryPath, relSpecs, useSortmerge, useTrieJoin);
+	process_queries(queryPath, relSpecs, useSortmerge, useTrieJoin, saveResults);
 
 	return 0;
 }
