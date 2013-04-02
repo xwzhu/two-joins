@@ -36,7 +36,7 @@ bool check_other_attrs(int* &rRec, int* &sRec, int* rOffs, int* sOffs,
 
 RelationSpec* sortmerge_join(RelationSpec* rSpec, RelationSpec* sSpec,
 		const string &mainJoinAttr, const vector<string> &joinAttrOrder,
-		size_t& numRec, bool saveResult = true);
+		size_t& numRec, bool saveResult = true, bool printProcess = false);
 
 RelationSpec* sequential_sortmege_join(const vector<string> &joinAttrOrderIn,
 		map<string, RelationSpec*> &relSpecs, map<string, bool> &joinRelMapIn,

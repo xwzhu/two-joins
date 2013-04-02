@@ -43,6 +43,6 @@ public:
 RelationSpec* leapfrog_triejoin(TrieJoin* triejoin, size_t &recordCount,
 		bool saveResult = false);
 void get_triejoin_record(TrieJoin* triejoin, deque<int> &seq,
-		vector<int*> &memDB, size_t &recordCount, bool &saveResult);
+		vector<int*> &memDB, size_t &recordCount, bool &saveResult, bool printProcess = false);
 
 #endif /* TRIEJOIN_H_ */

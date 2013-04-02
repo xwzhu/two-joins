@@ -21,7 +21,6 @@ RelationSpec* leapfrog_triejoin(TrieJoin* triejoin, size_t &recordCount,
 
 	triejoin->open(); // go to depth 0
 	get_triejoin_record(triejoin, seq, retSpec->memDB, recordCount, saveResult);
-	cerr << endl;
 	triejoin->up(); // go back to depth -1
 
 //	cerr << retSpec->relName << " " << retSpec->memDB.size() << endl;
@@ -31,7 +30,7 @@ RelationSpec* leapfrog_triejoin(TrieJoin* triejoin, size_t &recordCount,
 // Once a new joined record is found,
 // we use this function to get the record from trie structure recursively
 void get_triejoin_record(TrieJoin* triejoin, deque<int> &seq,
-		vector<int*> &memDB, size_t &recordCount, bool &saveResult) {
+		vector<int*> &memDB, size_t &recordCount, bool &saveResult, bool printProcess) {
 	while (!triejoin->at_end()) {
 		seq.push_back(triejoin->key());
 		if (triejoin->get_depth() != triejoin->get_attr_num() - 1) {
@@ -53,10 +52,12 @@ void get_triejoin_record(TrieJoin* triejoin, deque<int> &seq,
 				}
 				memDB.push_back(record);
 			}
-			if (recordCount % PRINT_NUM == 1)
-				cerr << '.';
-			if (recordCount % (PRINT_NUM * 20) == 0)
-				cerr << endl;
+			if (printProcess) {
+				if (recordCount % PRINT_NUM == 1)
+					cerr << '.';
+				if (recordCount % (PRINT_NUM * 20) == 0)
+					cerr << endl;
+			}
 		}
 		seq.pop_back();
 		triejoin->next();

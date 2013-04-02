@@ -61,7 +61,7 @@ RelationSpec* sequential_sortmege_join(const vector<string> &joinAttrOrderIn,
 
 RelationSpec* sortmerge_join(RelationSpec* rSpec, RelationSpec* sSpec,
 		const string &mainJoinAttr, const vector<string> &joinAttrOrder,
-		size_t& recordCount, bool saveResult) {
+		size_t& recordCount, bool saveResult, bool printProcess) {
 	// sort relations based on join attributes
 	int roffset = rSpec->get_attr_idx(mainJoinAttr);
 	int soffset = sSpec->get_attr_idx(mainJoinAttr);
@@ -155,10 +155,12 @@ RelationSpec* sortmerge_join(RelationSpec* rSpec, RelationSpec* sSpec,
 								nAttrSize, nRecPtr);
 						nSpec->memDB.push_back(nRecPtr);
 					}
-					if (recordCount % PRINT_NUM == 1)
-						cerr << ".";
-					if (recordCount % (PRINT_NUM * 20) == 1)
-						cerr << endl;
+					if (printProcess) {
+						if (recordCount % PRINT_NUM == 1)
+							cerr << ".";
+						if (recordCount % (PRINT_NUM * 20) == 1)
+							cerr << endl;
+					}
 				}
 			} else {
 				if (rKey > sKey) {

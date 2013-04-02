@@ -1,5 +1,5 @@
 #!/bin/bash
-LOOPS=1
+LOOPS=$1
 for i in 1 2 3
 do
     for j in {1..6}

@@ -9,8 +9,20 @@ int main(int argc, char *argv[]) {
 	bool saveResults = false;
 
 	if (argc == 5) {
-		queryPath = argv[2];
-		dirName = argv[4];
+		string tmp1 = argv[1];
+		string tmp2 = argv[3];
+		if (tmp1 == "-query" and tmp2 == "-database") {
+			queryPath = argv[2];
+			dirName = argv[4];
+		}
+		else if (tmp1 == "-database" and tmp2 == "-query") {
+			dirName = argv[2];
+			queryPath = argv[4];
+		}
+		else {
+			cerr << "Wrong arguments provided" << endl;
+			return 1;
+		}
 	} else {
 		dirName =
 				"/home/parallels/Joins/Joins-bin/dataset2-zipf/scale5/databasefile";
