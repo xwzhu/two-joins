@@ -23,11 +23,15 @@ public:
 			map<string, RelationSpec*> &relSpecs,
 			const vector<TrieIterator*> &tries);
 	~TrieJoin();
+	
+	// interfaces coherent with paper
 	void open();
 	void up();
 	void next();
 	bool at_end();
 	int key();
+
+	// debugging functions
 	void show();
 	void show_cur_attr();
 	void show_trie_depth();

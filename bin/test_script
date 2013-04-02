@@ -1,0 +1,33 @@
+#!/bin/bash
+LOOPS=1
+for i in 1 2 3
+do
+    for j in {1..6}
+    do
+        echo "----------- query$i / 1-uniform-scale$j ----------"
+        for (( k=1; k<=$LOOPS; k++ ))
+        do
+	    ./leapfrog -query query$i -database dataset1-uniform/scale$j/databasefile
+        done
+        for (( k=1; k<=$LOOPS; k++ ))
+        do
+            ./sortmerge -query query$i -database dataset1-uniform/scale$j/databasefile
+        done
+    done
+done
+
+for i in 1 2 3
+do
+    for j in {1..6}
+    do
+        echo "----------- query$i / 2-zipf-scale$j ----------"
+        for (( k=1; k<=$LOOPS; k++ ))
+        do
+	    ./leapfrog -query query$i -database dataset2-zipf/scale$j/databasefile
+        done
+        for (( k=1; k<=$LOOPS; k++ ))
+        do
+            ./sortmerge -query query$i -database dataset2-zipf/scale$j/databasefile
+        done
+    done
+done

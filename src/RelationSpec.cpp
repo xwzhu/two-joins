@@ -7,9 +7,10 @@
 
 #include "../include/RelationSpec.h"
 
+// Constructor for RelationSpec, we can choose whether to add
+// the line No. as the primary key for each record in the relation
 RelationSpec::RelationSpec(string relNameIn, string relPathIn,
 		vector<string> attrNamesIn, bool addLineNo) {
-	// TODO Auto-generated constructor stub
 	_addLineNo = addLineNo;
 	this->attrNames = attrNamesIn;
 	if (_addLineNo)
@@ -24,15 +25,12 @@ RelationSpec::RelationSpec(string relNameIn, string relPathIn,
 }
 
 RelationSpec::~RelationSpec() {
-	// TODO Auto-generated destructor stub
-//	cerr << "calling RelationSpec destructor for: " << relName << endl;
 	for (size_t i = 0; i != memDB.size(); i++) {
 		delete[] memDB[i];
 	}
 }
 
 bool RelationSpec::build_relation() {
-//	cerr << "Building relation for: " << relName << endl;
 	map<string, int> duplicate;
 	// open relation file
 	ifstream relFile(relFilePath.c_str());
@@ -43,12 +41,6 @@ bool RelationSpec::build_relation() {
 		while (relFile.good()) {
 			int* curRec = new int[numOfAttr];
 			getline(relFile, line);
-//			if (duplicate.find(line) != duplicate.end()) {
-//				duplicate[line] += 1;
-//				continue;
-//			} else {
-//				duplicate[line] = 0;
-//			}
 			if (line.empty())
 				continue;
 			split_comma(line, curRec);

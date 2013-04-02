@@ -25,20 +25,17 @@ private:
 	void move_right();
 	void move_parent(int& side);
 	int peek_parent(int& side);
+	int key_at_pos(size_t pos);
 public:
 	CompleteArrayBST(const vector<int> &sortedArray);
-	void show(size_t subRoot);
-	void show(bool fromStart);
-	void show_array();
+
+	// interface of array based BST,
+	// coherent with the paper
 	int key();
-	int key_at_pos(size_t pos);
-	size_t get_size();
 	bool at_end();
 	void next();
-	void seek(const int seekKey);
-	void move_to(size_t pos);
+	void seek(const int seekKey, const bool checkParent=true);
 	void move_front();
-	size_t get_pos();
 };
 
 #endif /* BSTREE_H_ */

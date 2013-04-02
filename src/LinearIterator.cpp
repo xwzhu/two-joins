@@ -8,6 +8,9 @@
 #include "../include/LinearIterator.h"
 #include "../include/SortMerge.h"
 
+// The contructor of LinearIterator is designed for TrieIterator use.
+// Therefore, it memorizes the information such as depth, path of trie, etc.
+// for convience use in TrieIterator
 LinearIterator::LinearIterator(RelationSpec* specIn, int depthIn,
 		int* stateIn) {
 	assert(depthIn >= -1);
@@ -29,6 +32,10 @@ LinearIterator::LinearIterator(RelationSpec* specIn, int depthIn,
 	}
 }
 
+// The contructor of LinearIterator is designed for TrieIterator use.
+// Therefore, it memorizes the information such as depth, path of trie, etc.
+// for convience use in TrieIterator, this one generate the LinearIterator
+// using the information from the above layer, therefore with depth >= 0
 LinearIterator::LinearIterator(RelationSpec* specIn, const idx_t &lastIdxMapIn,
 		int depthIn, int* stateIn) {
 	assert(depthIn >= 0);
@@ -50,6 +57,8 @@ LinearIterator::~LinearIterator() {
 	delete _state;
 }
 
+// generate a vector of values for building the CompleteArrayBST,
+// which is the balanced search tree like structure used in LinearIterator
 void LinearIterator::bst_vector(vector<int>& thisKeys) {
 	pair<size_t, size_t> idx;
 	if (_depth == 0) {
@@ -92,14 +101,6 @@ int* LinearIterator::tuple() {
 	return _state;
 }
 
-void LinearIterator::display_record() {
-	int * curRec = tuple();
-	for (int i = 0; i != spec->numOfAttr; i++) {
-		cerr << curRec[i] << " ";
-	}
-	cerr << endl;
-}
-
 idx_t LinearIterator::get_idx_map() {
 	return _thisIdxMap;
 }
@@ -128,4 +129,12 @@ void LinearIterator::seek(const int seekKey) {
 	if (!_bst->at_end()) {
 		_state[_depth] = _bst->key();
 	}
+}
+
+void LinearIterator::display_record() {
+	int * curRec = tuple();
+	for (int i = 0; i != spec->numOfAttr; i++) {
+		cerr << curRec[i] << " ";
+	}
+	cerr << endl;
 }

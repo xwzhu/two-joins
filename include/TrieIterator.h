@@ -11,6 +11,8 @@
 #include "RelationSpec.h"
 #include "LinearIterator.h"
 
+// TrieIterator is implemented based on the pseudo code provided by
+// the creator of Leapfrog Triejoin
 class TrieIterator {
 private:
 	int _arity;
@@ -27,6 +29,8 @@ public:
 	RelationSpec* spec;
 	TrieIterator(RelationSpec* specIn, bool buildOnTheFly = false);
 	~TrieIterator();
+	
+	// interfaces coherent with paper
 	int key();
 	bool at_end();
 	void open();

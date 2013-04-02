@@ -1,5 +1,7 @@
 #include "../include/SortMerge.h"
 
+// This function using sort merge to join relations sequentially
+// Please refer to the report for more details
 RelationSpec* sequential_sortmege_join(const vector<string> &joinAttrOrderIn,
 		map<string, RelationSpec*> &relSpecs, map<string, bool> &joinRelMapIn,
 		size_t &recordCount, bool saveResult) {
@@ -45,12 +47,6 @@ RelationSpec* sequential_sortmege_join(const vector<string> &joinAttrOrderIn,
 						joinAttrOrder, recordCount, saveResult);
 			}
 
-			// delete the relation after joining
-//				delete rSpec; rSpec = NULL;
-//				delete sSpec; sSpec = NULL;
-//				relSpecs.erase(candidateRels.at(0));
-//				relSpecs.erase(candidateRels.at(1));
-
 			joinRelMap[joinedSpec->relName] = true;
 			relSpecs[joinedSpec->relName] = joinedSpec;
 			retSpec = joinedSpec;
@@ -66,9 +62,6 @@ RelationSpec* sequential_sortmege_join(const vector<string> &joinAttrOrderIn,
 RelationSpec* sortmerge_join(RelationSpec* rSpec, RelationSpec* sSpec,
 		const string &mainJoinAttr, const vector<string> &joinAttrOrder,
 		size_t& recordCount, bool saveResult) {
-//	cerr << "Join on " << mainJoinAttr << " using " << rSpec->relName << " & "
-//			<< sSpec->relName << " ... ";
-
 	// sort relations based on join attributes
 	int roffset = rSpec->get_attr_idx(mainJoinAttr);
 	int soffset = sSpec->get_attr_idx(mainJoinAttr);
@@ -76,7 +69,6 @@ RelationSpec* sortmerge_join(RelationSpec* rSpec, RelationSpec* sSpec,
 	assert(soffset != -1);
 	sort(rSpec->memDB.begin(), rSpec->memDB.end(), sorter(roffset));
 	sort(sSpec->memDB.begin(), sSpec->memDB.end(), sorter(soffset));
-//	cerr << "sorting done." << " ";
 
 	// Check whether there are other attributes (beside the mainJoinAttr) need to be joined at the same time
 	vector<string> commonAttrs = sort_intersect(rSpec->attrNames,

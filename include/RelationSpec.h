@@ -10,11 +10,14 @@
 
 #include "utils.h"
 
+// Each RelationSpec object stores all the information,
+// incuding the records, of a specifice relation
 class RelationSpec {
 public:
 	RelationSpec(string relName, string relPath, vector<string> attrNames,
 			bool addLineNo = true);
 	~RelationSpec();
+
 	bool build_relation();
 	bool has_attr(string attrName);
 	int get_attr_idx(string attrName);

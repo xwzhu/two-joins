@@ -17,7 +17,7 @@ class LinearIterator {
 private:
 	int* _state;
 	int _depth;
-	idx_t _thisIdxMap;
+	idx_t _thisIdxMap; // the memDB array index map for the current layer of trie
 	idx_t _lastIdxMap; // the memDB array index map for the upper layer of trie
 	CompleteArrayBST* _bst;
 public:
@@ -26,17 +26,23 @@ public:
 	LinearIterator(RelationSpec* specIn, const idx_t &lastIdxMapIn, int depthIn,
 				int* stateIn);
 	~LinearIterator();
+
+	// interfaces to be called by TrieIterator
+	// coherent with the paper
 	int key();
 	void next();
 	bool at_end();
 	void seek(const int seekKey);
 	int* tuple();
-	void display_record();
 	idx_t get_idx_map();
 	void reset();
-	RelationSpec *spec;
+
+	// debugging fuction
+	void display_record();
 private:
 	void bst_vector(vector<int>& thisKeys);
+public:
+	RelationSpec *spec;
 };
 
 #endif /* LINEARITERATOR_H_ */

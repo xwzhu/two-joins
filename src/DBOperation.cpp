@@ -2,6 +2,7 @@
 #include "../include/SortMerge.h"
 #include "../include/TrieJoin.h"
 
+// Prepare database, build relations, generate RelationSpec objects
 bool prepare_minibase(const string dbSpecPath,
 		map<string, RelationSpec*> &relSpecs, const bool addLineNo) {
 	string dirPath = get_dir_path(dbSpecPath);
@@ -27,9 +28,9 @@ bool prepare_minibase(const string dbSpecPath,
 	}
 }
 
+// Read and build relation from files, store them in the main memory
 RelationSpec* prepare_relation(const string dbSpecPath, const string RelSpecStr,
 		const bool addLineNo) {
-//	cerr << "Preparing relation: " << RelSpecStr << endl;
 	string dirPath = get_dir_path(dbSpecPath);
 	istringstream ss(RelSpecStr);
 	char temp[256];
@@ -55,19 +56,13 @@ RelationSpec* prepare_relation(const string dbSpecPath, const string RelSpecStr,
 	if (!relSpec->build_relation())
 		cerr << "Cannot build relation: " << relSpec->relName << endl;
 
-//	CompleteArrayBST * bst = new CompleteArrayBST(relSpec);
-//	bst->show(0);
-//	cerr << endl;
-//	bst->show_array();
-
 	return relSpec;
 }
 
+// Process queries
 void process_queries(const string queryPath,
 		map<string, RelationSpec*> &relSpecs, bool useSortmerge,
 		bool useTrieJoin, bool saveResults) {
-//	cerr << "Processing queries..." << endl;
-
 	pair<vector<string>, vector<string> > querySpecs;
 	ifstream queryFile(queryPath.c_str());
 	if (queryFile.is_open()) {
@@ -89,6 +84,7 @@ void process_queries(const string queryPath,
 		RelationSpec* joinedSpec = NULL;
 		size_t recordCount;
 
+		// TrieJoin is called here
 		if (useTrieJoin) {
 			vector<TrieIterator*> tries;
 			for (size_t i = 0; i != orgJoinRels.size(); i++) {
@@ -114,6 +110,7 @@ void process_queries(const string queryPath,
 			delete triejoin;
 		}
 
+		// Sortmerge is called here
 		if (useSortmerge) {
 			recordCount = 0;
 			clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time1);

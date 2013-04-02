@@ -7,6 +7,7 @@
 
 #include "../include/CompleteArrayBST.h"
 
+// Contructor for an array implemetation of a complete binary search tree
 CompleteArrayBST::CompleteArrayBST(const vector<int> &sortedArray) {
 	size = sortedArray.size();
 	assert(size > 0);
@@ -17,14 +18,15 @@ CompleteArrayBST::CompleteArrayBST(const vector<int> &sortedArray) {
 	move_front();
 }
 
-// Build an array-based complete binary search tree
+// Build an array-based complete binary search tree for a sorted array
+// Recursively build left, build root, Recursively build right
+// Time complexity: O(n)
 void CompleteArrayBST::make_tree(const vector<int> &sortedArray, size_t curRootPos,
 		size_t lowIdx, size_t highIdx) {
 	size_t subTreeSize = (highIdx - lowIdx + 1);
 	assert(subTreeSize >= 1);
 
 	if (subTreeSize == 1) {
-//		cerr << sortedArray[lowIdx] << endl;
 		idxArray[curRootPos] = sortedArray[lowIdx];
 	} else {
 		// get the height of the subtree
@@ -34,7 +36,6 @@ void CompleteArrayBST::make_tree(const vector<int> &sortedArray, size_t curRootP
 			tmp /= 2;
 			height++;
 		}
-
 		// get the bottom count
 		size_t bottomCapacity = 1 << (height - 1);
 		size_t bottomCount = subTreeSize - (bottomCapacity - 1);
@@ -49,6 +50,7 @@ void CompleteArrayBST::make_tree(const vector<int> &sortedArray, size_t curRootP
 		}
 		idxArray[curRootPos] = sortedArray[lowIdx + leftCount];
 
+		// build left and right node
 		make_tree(sortedArray, curRootPos * 2 + 1, lowIdx, lowIdx + leftCount - 1);
 		if (rightCount > 0)
 			make_tree(sortedArray, curRootPos * 2 + 2, highIdx - rightCount + 1,
@@ -56,85 +58,55 @@ void CompleteArrayBST::make_tree(const vector<int> &sortedArray, size_t curRootP
 	}
 }
 
-void CompleteArrayBST::move_to(size_t pos) {
-	assert(pos < size);
-	curPos = pos;
-}
-
-size_t CompleteArrayBST::get_pos() {
-	return curPos;
-}
-
-void CompleteArrayBST::seek(const int seekKey) {
-//	assert(seekKey>=key());
-
-//	cerr << at_end() << " " << seekKey << " " << key() << endl;
-	if (at_end() || seekKey <= key()) {
-		return;
+// When do seek(), start from current location
+// if the value is bigger than parent, go to parent node directly
+// otherwise, go to the next node and seek() again
+// complexity O(logN), amorised complexity O(1+log(N/m))
+void CompleteArrayBST::seek(const int seekKey, const bool checkParent) {
+	if (at_end() || seekKey == key()) {
+		return;	
 	}
-
-	if (has_parent()) {
+	
+	// if no less than right hand side parent
+	//  go to the parent node directly and recursive call seek
+	if (checkParent && has_parent()) {
 		int pValue, side;
 		pValue = peek_parent(side);
 
-		if (side == -1 && pValue <= seekKey) { // go to the parent nod and recursive call seek
-//			cerr << "move_parent" << " " << curPos << " " << key() << " " << pValue << " " << seekKey << " ";
+		if (side == -1 && pValue <= seekKey) {
 			move_parent(side);
-//			cerr << curPos << " " << side << endl;
-			seek(seekKey);
+			seek(seekKey, true);
+			return;
 		}
-		else { // pValue >= value
-//			cerr << "move_next" << " " << curPos << " " << key() << " " << pValue << " " << seekKey << " ";
+	}
+	
+	if (seekKey < key()) {
+		if (has_left()) {
+			move_left();
+			seek(seekKey, false);
+		}
+		else {
+			// if there is no smaller left child
+			// then here is the node we want to find
+			return;
+		}
+	}
+	else { // seekKey > key()
+		if (has_right()) {
+			move_right();
+			seek(seekKey, false);
+		}
+		else{
+			// move to next in case of the highest parent
+			// or the end of tree being the node we want to find
 			next();
-//			cerr << curPos << endl;
-			seek(seekKey);
+			return;
 		}
 	}
-	else { // no parent, we are at root, go next
-		next();
-		seek(seekKey);
-	}
 }
 
-void CompleteArrayBST::show(size_t subRoot) {
-	if (subRoot*2+1 < size) {
-		show(subRoot*2+1);
-	}
-	cerr << key_at_pos(subRoot) << " ";
-	if (subRoot*2+2 < size) {
-		show(subRoot*2+2);
-	}
-}
-
-void CompleteArrayBST::show(bool fromStart) {
-	if (fromStart)
-		move_front();
-	while(!at_end()) {
-		cerr << key() << " ";
-		next();
-	}
-	cerr << endl;
-}
-
-void CompleteArrayBST::show_array() {
-	for (size_t i=0; i!=size; i++) {
-		cerr << idxArray[i] << " ";
-	}
-	cerr << endl;
-}
-
-int CompleteArrayBST::key() {
-	assert ( curPos < size );
-	return idxArray[curPos];
-}
-
-int CompleteArrayBST::key_at_pos(size_t pos) {
-	assert ( pos < size );
-	return idxArray[pos];
-}
-
+// Move to the next position
 void CompleteArrayBST::next() {
-//	cerr << "next" << " "<< key() << " ";
 	if (at_end())
 		return;
 
@@ -165,11 +137,16 @@ void CompleteArrayBST::next() {
 	}
 	if (!found)
 		atEnd = true;
-//	cerr << key() << endl;
 }
 
-size_t CompleteArrayBST::get_size() {
-	return size;
+int CompleteArrayBST::key() {
+	assert ( curPos < size );
+	return idxArray[curPos];
+}
+
+int CompleteArrayBST::key_at_pos(size_t pos) {
+	assert ( pos < size );
+	return idxArray[pos];
 }
 
 bool CompleteArrayBST::at_end() {
@@ -196,6 +173,8 @@ void CompleteArrayBST::move_right() {
 	curPos = curPos*2+2;
 }
 
+// move to parent, return which side of parent 
+// that the current node is located
 void CompleteArrayBST::move_parent(int& side) {
 	if (curPos % 2 == 1) {
 		side = -1;
@@ -207,14 +186,15 @@ void CompleteArrayBST::move_parent(int& side) {
 	}
 }
 
+// Move to the smallest value, i.e., the front
 void CompleteArrayBST::move_front() {
 	curPos = 0;
 	while (has_left())
 		move_left();
 	atEnd = false;
-//	cerr << curPos << " " << key() << endl;
 }
 
+// peek the value of parent, but not move to it
 int CompleteArrayBST::peek_parent(int& side) {
 	if (curPos % 2 == 1) {
 		side = -1;

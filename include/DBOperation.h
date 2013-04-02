@@ -3,6 +3,8 @@
 
 #include "RelationSpec.h"
 
+// The names of the function are their use
+
 bool prepare_minibase(const string dbSpecPath,
 		map<string, RelationSpec*> &relSpecs, const bool addLineNo = true);
 

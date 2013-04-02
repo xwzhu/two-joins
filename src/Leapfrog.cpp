@@ -11,27 +11,8 @@ bool iterSorter(TrieIterator* iter1, TrieIterator* iter2) {
 	return iter1->key() < iter2->key();
 }
 
-//Leapfrog::Leapfrog(map<string, RelationSpec *> &relSpecs,
-//		vector<string> &orgJoinRels) {
-//	// TODO Auto-generated constructor stub
-//	atEnd = false;
-//	size = orgJoinRels.size();
-//	for (size_t i = 0; i != size; i++) {
-//		LinearIterator* linearPtr = new LinearIterator(
-//				relSpecs[orgJoinRels[i]]);
-//		iterArray.push_back(linearPtr);
-////		linearPtr->display_record();
-//		if (linearPtr->at_end())
-//			atEnd = true;
-//	}
-//
-//	// sort the array iterArray by keys at which the iterators are positioned
-//	sort(iterArray.begin(), iterArray.end(), iterSorter);
-//
-//	pIdx = 0;
-//	search();
-//}
-
+// Constructor of Leapfrog, contains a vector of pointers to TrieIterator
+// Inplemented based on the code in the paper
 Leapfrog::Leapfrog(const vector<TrieIterator*> &iterArrayIn,
 		const string& attrNameIn) {
 	_iterArray = iterArrayIn;
@@ -43,6 +24,7 @@ Leapfrog::Leapfrog(const vector<TrieIterator*> &iterArrayIn,
 	_pIdx = -1;
 }
 
+// Inplemented based on the code in the paper
 void Leapfrog::init() {
 	_atEnd = false;
 
@@ -60,6 +42,9 @@ void Leapfrog::init() {
 	}
 }
 
+// Inplemented based on the code in the paper
+// This is the workhorse of leapfrog, with the ability to find the 
+// next common value in all TrieIterator
 void Leapfrog::search() {
 	int maxKey = _iterArray[(_pIdx + _size - 1) % _size]->key();
 	while (true) {
@@ -80,6 +65,7 @@ void Leapfrog::search() {
 	}
 }
 
+// Inplemented based on the code in the paper
 void Leapfrog::next() {
 	_iterArray[_pIdx]->next();
 	if (_iterArray[_pIdx]->at_end()) {
@@ -90,6 +76,7 @@ void Leapfrog::next() {
 	}
 }
 
+// Inplemented based on the code in the paper
 void Leapfrog::seek(const int seekKey) {
 	_iterArray[_pIdx]->seek(seekKey);
 	if (_iterArray[_pIdx]->at_end()) {
@@ -102,6 +89,25 @@ void Leapfrog::seek(const int seekKey) {
 
 bool Leapfrog::at_end() {
 	return _atEnd;
+}
+
+int Leapfrog::key() {
+	assert(!_atEnd);
+	return _key;
+}
+
+// use for triejoin, to go to deeper layer of trie structure
+void Leapfrog::open_all() {
+	for (size_t i = 0; i != _size; i++) {
+		_iterArray[i]->open();
+	}
+}
+
+// use for triejoin, to go to upper layer of trie structure
+void Leapfrog::up_all() {
+	for (size_t i = 0; i != _size; i++) {
+		_iterArray[i]->up();
+	}
 }
 
 void Leapfrog::show() {
@@ -119,21 +125,4 @@ void Leapfrog::show_depth() {
 				<< " ";
 	}
 	cerr << endl;
-}
-
-void Leapfrog::open_all() {
-	for (size_t i = 0; i != _size; i++) {
-		_iterArray[i]->open();
-	}
-}
-
-void Leapfrog::up_all() {
-	for (size_t i = 0; i != _size; i++) {
-		_iterArray[i]->up();
-	}
-}
-
-int Leapfrog::key() {
-	assert(!_atEnd);
-	return _key;
 }

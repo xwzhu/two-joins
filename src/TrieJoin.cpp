@@ -7,6 +7,9 @@
 
 #include "../include/TrieJoin.h"
 
+// We do the triejoin in the order of join attributes,
+// and iterate the trie structure from top to bottom
+// and again, recursively
 RelationSpec* leapfrog_triejoin(TrieJoin* triejoin, size_t &recordCount,
 		bool saveResult) {
 	assert(triejoin->get_depth() == -1);
@@ -25,6 +28,8 @@ RelationSpec* leapfrog_triejoin(TrieJoin* triejoin, size_t &recordCount,
 	return retSpec;
 }
 
+// Once a new joined record is found,
+// we use this function to get the record from trie structure recursively
 void get_triejoin_record(TrieJoin* triejoin, deque<int> &seq,
 		vector<int*> &memDB, size_t &recordCount, bool &saveResult) {
 	while (!triejoin->at_end()) {
@@ -34,6 +39,7 @@ void get_triejoin_record(TrieJoin* triejoin, deque<int> &seq,
 			get_triejoin_record(triejoin, seq, memDB, recordCount, saveResult);
 			triejoin->up();
 		} else {
+			// Here a record has been found
 			assert(seq.size() == triejoin->get_attr_num());
 			recordCount++;
 			if (saveResult) {
@@ -57,6 +63,8 @@ void get_triejoin_record(TrieJoin* triejoin, deque<int> &seq,
 	}
 }
 
+// The TrieJoin class is implemented according to the description
+// and pseudo code in the paper
 TrieJoin::TrieJoin(const vector<string> &orgJoinRels,
 		const vector<string> &joinAttrOrder,
 		map<string, RelationSpec*> &relSpecs,

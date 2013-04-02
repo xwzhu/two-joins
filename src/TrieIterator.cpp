@@ -7,6 +7,8 @@
 
 #include "../include/TrieIterator.h"
 
+// We can use buildOnTheFly to decide whether to pre-build the TrieIterator
+// That is whether we want to pre-build the map between trie path and LinearIterators
 TrieIterator::TrieIterator(RelationSpec* specIn, bool buildOnTheFly) {
 	spec = specIn;
 	_arity = spec->numOfAttr;
@@ -26,6 +28,9 @@ TrieIterator::~TrieIterator() {
 	delete _iter;
 }
 
+// This function is used to build the map between trie path and LinearIterators
+// It is recursively called to iterate over the entire trie, and build the map
+// during the iteration
 void TrieIterator::build_map(LinearIterator* upperIter) {
 	_depth++;
 	if (_depth == 0) {
@@ -40,6 +45,7 @@ void TrieIterator::build_map(LinearIterator* upperIter) {
 					upperIter->get_idx_map(), _depth, _state);
 			update_vState();
 			_linearIterMap[_vState] = thisIter;
+			// recursively called to build next layer
 			build_map(thisIter);
 			upperIter->next();
 		}
@@ -47,6 +53,11 @@ void TrieIterator::build_map(LinearIterator* upperIter) {
 	}
 	_depth--;
 }
+
+// The result part are implemented based on the pseudo code
+// provided by the creator of Leapfrog Triejoin, they are not complicated
+// and the key idea is using a stack to store the state of current layer
+// before moving on the the deeper one
 
 int TrieIterator::key() {
 	assert(!_atEnd);
@@ -61,7 +72,6 @@ bool TrieIterator::at_end() {
 void TrieIterator::open() {
 	assert(!_atEnd);
 	assert(_depth < _arity - 1);
-///	assert(!_iter->at_end());
 	++_depth;
 	_stack.push(_iter);
 	//open new iter

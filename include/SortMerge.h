@@ -9,6 +9,7 @@
 #define SORTMERGE_H_
 #include "RelationSpec.h"
 
+// sorter class for comparing two int*, for the use of sort step of sortmerge join
 bool comparePtr(int const* a, int const* b, int sortIdx);
 class sorter {
 	int sortIdx;
@@ -21,8 +22,10 @@ public:
 	}
 };
 
+// to get the distinct union of two attributes
 vector<string> sort_union(vector<string> attr1, vector<string> attr2);
 
+// to get the distinct intersection of two attributes
 vector<string> sort_intersect(vector<string> attr1, vector<string> attr2);
 
 void make_record(int* &rRec, int* &sRec, int* rAttrIdx, int* sAttrIdx,

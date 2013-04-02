@@ -1,0 +1,14 @@
+I am using cmake for compiling the requested binaries.
+You can find already compiled binaries in /bin, or you can build them yourself.
+When running the binaries, please make sure you have enough memory space (some test cases require main+swap>=8G).
+
+structure of current dir:
+.git/: contains version control informations.
+bin/: contains binary files, intermediate files for compiling, also a script and some cases for testing.
+include/: contains header files.
+src/: contains source files corresponding to header files.
+
+leapfrog.cpp: source file for compiling binary leapfrog.
+sortmerge.cpp: source file for compiling binary sortmerge.
+CMakeLists.txt: cmake config file.
+readme: this file.

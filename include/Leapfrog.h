@@ -14,16 +14,21 @@
 class Leapfrog {
 public:
 	Leapfrog(const vector<TrieIterator*> &iterArrayIn, const string& attrName);
+
+	// interface of Leapfrog,
+	// coherent with the paper
 	void init();
 	void search();
 	void next();
 	void seek(const int seekKey);
 	bool at_end();
-	void show();
+	int key();
 	void open_all();
 	void up_all();
+
+	// debugging functions
+	void show();
 	void show_depth();
-	int key();
 private:
 	vector<TrieIterator *> _iterArray;
 	bool _atEnd;
